@@ -1,0 +1,1120 @@
+<title>Jaiswal Group — Business Command Center</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root{
+  color-scheme: light;
+  --bg:            #fefefc;
+  --bg-deep:       #f7f4ec;
+  --surface:       #ffffff;
+  --surface-soft:  #fbf9f3;
+  --ink:           #241c0e;
+  --ink-2:         #5a4f38;
+  --ink-muted:     #8a7d5f;
+  --hair:          rgba(36,28,14,0.11);
+  --hair-strong:   rgba(36,28,14,0.20);
+  --gold:          #b8860b;
+  --gold-deep:     #8f6a05;
+  --gold-soft:     #f4e3b0;
+  --gold-wash:     #fbf3dc;
+  --gold-line:     rgba(184,134,11,0.35);
+
+  --s1: #b8860b; /* gold   - lighting */
+  --s2: #0e8a73; /* teal   - fans */
+  --s3: #8a2fb8; /* violet - wire */
+  --s4: #c2431f; /* rust   - misc */
+  --s5: #1f5fad; /* blue   - other */
+
+  --good:     #0ca30c;
+  --warning:  #b5790a;
+  --critical: #b8302f;
+  --critical-bg: #fbe9e7;
+  --warning-bg:  #fbf0da;
+  --good-bg:     #e6f6e2;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Manrope',system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',Georgia,serif; text-wrap:balance; }
+.tabular{ font-variant-numeric:tabular-nums; }
+
+/* ---------- shell ---------- */
+.wrap{ max-width:1280px; margin:0 auto; padding:0 28px 80px; }
+
+header.top{
+  background: linear-gradient(180deg,var(--bg-deep),var(--bg));
+  border-bottom:1px solid var(--hair);
+  padding:34px 0 26px;
+}
+.top-inner{ max-width:1280px; margin:0 auto; padding:0 28px; display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap;}
+.brandmark{ display:flex; align-items:center; gap:14px; }
+.brandmark .mark{
+  width:44px; height:44px; border-radius:10px; flex:none;
+  background: conic-gradient(from 220deg, var(--gold), var(--gold-deep), var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  color:var(--surface); font-family:'Fraunces',serif; font-weight:700; font-size:20px;
+  box-shadow: 0 6px 16px -6px rgba(184,134,11,0.55);
+}
+.brandmark .titles h1{ margin:0; font-size:26px; font-weight:600; letter-spacing:-.01em; }
+.brandmark .titles .sub{ margin-top:2px; font-size:13px; color:var(--ink-muted); letter-spacing:.02em; }
+.top-meta{ text-align:right; font-size:12.5px; color:var(--ink-muted); line-height:1.6; }
+.top-meta b{ color:var(--ink-2); font-weight:700;}
+
+nav.tabs{
+  display:flex; gap:4px; margin-top:26px; border-bottom:1px solid var(--hair);
+}
+nav.tabs a{
+  font-size:13.5px; font-weight:700; letter-spacing:.01em; color:var(--ink-muted);
+  text-decoration:none; padding:10px 4px; margin-right:26px; border-bottom:2px solid transparent;
+  cursor:pointer;
+}
+nav.tabs a:hover{ color:var(--ink-2); }
+nav.tabs a.active{ color:var(--gold-deep); border-bottom-color:var(--gold); }
+
+section.view{ display:none; padding-top:34px; }
+section.view.active{ display:block; }
+
+
+.eyebrow{
+  font-size:11.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--gold-deep); margin:0 0 8px;
+}
+.section-head{ display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin:48px 0 18px; flex-wrap:wrap;}
+.section-head:first-child{ margin-top:0; }
+.section-head h2{ margin:0; font-size:22px; font-weight:600; }
+.section-head p{ margin:4px 0 0; font-size:13.5px; color:var(--ink-muted); max-width:60ch;}
+
+/* ---------- KPI tiles ---------- */
+.kpi-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:14px; }
+.kpi{
+  background:var(--surface); border:1px solid var(--hair); border-radius:14px; padding:18px 18px 16px;
+  display:flex; flex-direction:column; gap:6px; position:relative; overflow:hidden;
+}
+.kpi::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--gold); opacity:.7;}
+.kpi.flag::before{ background:var(--critical); }
+.kpi .lbl{ font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-muted);}
+.kpi .val{ font-size:25px; font-weight:700; font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.kpi .delta{ font-size:12px; font-weight:600; display:flex; align-items:center; gap:5px;}
+.kpi .delta.warn{ color:var(--critical); }
+.kpi .delta.good{ color:var(--good); }
+.kpi .delta.neutral{ color:var(--ink-muted); font-weight:500; }
+
+/* ---------- cards / grid ---------- */
+.grid{ display:grid; gap:18px; }
+.g2{ grid-template-columns:1.3fr 1fr; }
+.g3{ grid-template-columns:repeat(3,1fr); }
+.card{
+  background:var(--surface); border:1px solid var(--hair); border-radius:16px; padding:22px 24px 24px;
+}
+.card h3{ margin:0 0 3px; font-size:16px; font-weight:600; }
+.card .cap{ margin:0 0 18px; font-size:12.5px; color:var(--ink-muted); }
+.card .cap b{color:var(--ink-2);}
+
+/* ---------- bar chart (horizontal, css) ---------- */
+.hbars{ display:flex; flex-direction:column; gap:13px; }
+.hbar-row{ display:grid; grid-template-columns:120px 1fr 92px; align-items:center; gap:12px; }
+.hbar-row .name{ font-size:12.5px; font-weight:700; color:var(--ink-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.hbar-track{ height:11px; background:var(--surface-soft); border:1px solid var(--hair); border-radius:6px; overflow:hidden; position:relative;}
+.hbar-fill{ height:100%; border-radius:5px; min-width:3px; }
+.hbar-row .num{ font-size:12.5px; font-weight:700; text-align:right; color:var(--ink); }
+.hbar-row .num small{ font-weight:600; color:var(--ink-muted); margin-left:3px;}
+
+/* ---------- vertical bars ---------- */
+.vbars{ display:flex; align-items:flex-end; gap:18px; height:190px; padding-top:10px; border-bottom:1px solid var(--hair-strong);}
+.vbar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; gap:8px;}
+.vbar-col .bar{ width:100%; max-width:52px; border-radius:6px 6px 3px 3px; position:relative; }
+.vbar-col .bar .tag{ position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:12px; font-weight:800; white-space:nowrap;}
+.vbar-col .xl{ font-size:11.5px; font-weight:700; color:var(--ink-2); margin-top:2px; text-align:center;}
+.vbar-col .xl small{ display:block; font-weight:500; color:var(--ink-muted); font-size:10.5px;}
+
+/* ---------- donut ---------- */
+.donut-wrap{ display:flex; align-items:center; gap:26px; flex-wrap:wrap;}
+.legend{ display:flex; flex-direction:column; gap:10px; flex:1; min-width:180px;}
+.legend .row{ display:flex; align-items:center; gap:9px; font-size:12.5px; }
+.legend .sw{ width:11px; height:11px; border-radius:3px; flex:none;}
+.legend .row .name{ color:var(--ink-2); font-weight:600; flex:1;}
+.legend .row .pct{ font-weight:800; color:var(--ink);}
+
+/* ---------- diverging bar (margin) ---------- */
+.divbar-row{ display:grid; grid-template-columns:190px 1fr 70px; align-items:center; gap:10px; font-size:12px;}
+.divbar-track{ height:9px; background:var(--surface-soft); border-radius:5px; position:relative; }
+.divbar-track .zero{ position:absolute; left:50%; top:-3px; bottom:-3px; width:1px; background:var(--hair-strong);}
+.divbar-fill{ position:absolute; top:0; bottom:0; border-radius:4px; }
+
+/* ---------- table ---------- */
+.tbl-wrap{ overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; font-size:12.8px; }
+thead th{
+  text-align:left; font-size:10.8px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--ink-muted); padding:0 10px 10px; border-bottom:1px solid var(--hair-strong); white-space:nowrap;
+}
+thead th.num{ text-align:right; }
+tbody td{ padding:11px 10px; border-bottom:1px solid var(--hair); white-space:nowrap; }
+tbody td.num{ text-align:right; font-weight:700; }
+tbody tr:last-child td{ border-bottom:none; }
+tbody tr:hover{ background:var(--surface-soft); }
+.name-cell{ font-weight:700; color:var(--ink); max-width:280px; overflow:hidden; text-overflow:ellipsis; }
+.mini-bar{ display:inline-block; height:6px; border-radius:3px; background:var(--gold); vertical-align:middle; margin-right:8px; opacity:.85;}
+
+.pill{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:800; padding:3px 9px; border-radius:20px; }
+.pill.critical{ background:var(--critical-bg); color:var(--critical); }
+.pill.warning{ background:var(--warning-bg); color:var(--warning); }
+.pill.good{ background:var(--good-bg); color:var(--good); }
+.pill.gold{ background:var(--gold-wash); color:var(--gold-deep); }
+
+/* ---------- insight cards ---------- */
+.insight-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.insight{
+  background:var(--surface); border:1px solid var(--hair); border-left:3px solid var(--gold);
+  border-radius:12px; padding:18px 20px; display:flex; flex-direction:column; gap:8px;
+}
+.insight.risk{ border-left-color:var(--critical); }
+.insight.watch{ border-left-color:var(--warning); }
+.insight .itag{ font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted); }
+.insight h4{ margin:0; font-size:15px; font-weight:700; font-family:'Fraunces',serif; }
+.insight p{ margin:0; font-size:13px; line-height:1.55; color:var(--ink-2); }
+.insight .act{ font-size:12px; font-weight:700; color:var(--gold-deep); margin-top:4px; }
+
+.callout{
+  background:linear-gradient(135deg,var(--gold-wash),var(--surface));
+  border:1px solid var(--gold-line); border-radius:16px; padding:22px 26px;
+  display:flex; gap:20px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+}
+.callout .txt strong{ display:block; font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:4px;}
+.callout .txt span{ font-size:13px; color:var(--ink-2); }
+
+.gap-note{
+  border:1px dashed var(--hair-strong); border-radius:14px; padding:18px 22px; font-size:13px; color:var(--ink-2);
+  display:flex; gap:14px; align-items:flex-start; background:var(--surface-soft);
+}
+.gap-note b{ color:var(--ink); }
+
+/* ---------- excel converter ---------- */
+.conv-card{ display:flex; flex-direction:column; }
+.dropzone{
+  display:flex; align-items:center; gap:14px; cursor:pointer;
+  border:1.5px dashed var(--hair-strong); border-radius:12px; padding:16px 18px;
+  background:var(--surface-soft); transition:border-color .15s,background .15s;
+}
+.dropzone:hover, .dropzone.drag{ border-color:var(--gold); background:var(--gold-wash); }
+.dropzone .dz-icon{
+  width:38px; height:38px; border-radius:10px; flex:none; display:flex; align-items:center; justify-content:center;
+  background:var(--gold-wash); color:var(--gold-deep); font-size:18px; font-weight:800;
+}
+.dropzone .dz-text{ font-size:12.8px; color:var(--ink-2); line-height:1.5; }
+.dropzone .dz-text b{ color:var(--ink); }
+.dropzone .dz-text span{ color:var(--ink-muted); font-size:11.5px; }
+
+.conv-summary{ display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+.conv-summary .stat{
+  flex:1; min-width:120px; background:var(--surface-soft); border:1px solid var(--hair); border-radius:10px;
+  padding:10px 14px;
+}
+.conv-summary .stat .k{ font-size:10.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-muted); }
+.conv-summary .stat .v{ font-size:16px; font-weight:700; font-family:'Fraunces',serif; margin-top:2px; }
+
+.conv-preview{ margin-top:16px; max-height:320px; overflow-y:auto; border:1px solid var(--hair); border-radius:10px; }
+.conv-preview table thead th{ position:sticky; top:0; background:var(--surface); }
+.conv-preview .empty-hint{ padding:26px 16px; text-align:center; color:var(--ink-muted); font-size:12.8px; }
+
+.conv-actions{ display:flex; gap:10px; margin-top:14px; }
+.conv-btn{
+  font-size:12px; font-weight:700; padding:8px 16px; border-radius:20px; cursor:pointer;
+  border:1px solid var(--gold-line); background:var(--gold-wash); color:var(--gold-deep);
+}
+.conv-btn:hover{ background:var(--gold-soft); }
+.conv-btn[disabled]{ opacity:.45; cursor:not-allowed; }
+.conv-btn.ghost{ background:var(--surface-soft); border-color:var(--hair-strong); color:var(--ink-2); }
+
+/* ---------- AI bill extractor ---------- */
+.pdfx-keyrow{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+.pdfx-input{
+  flex:1; min-width:260px; font-size:13px; font-family:inherit; color:var(--ink);
+  background:var(--surface-soft); border:1px solid var(--hair-strong); border-radius:9px; padding:9px 12px;
+}
+.pdfx-input:focus{ outline:none; border-color:var(--gold); }
+.pdfx-remember{ font-size:12px; color:var(--ink-muted); display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.pdfx-status{ font-size:12.5px; color:var(--ink-2); margin-top:14px; min-height:1px; }
+.pdfx-status.err{ color:var(--critical); font-weight:700; }
+.pdfx-status.ok{ color:var(--good); font-weight:700; }
+.pdfx-status .spin{
+  display:inline-block; width:12px; height:12px; border-radius:50%;
+  border:2px solid var(--gold-line); border-top-color:var(--gold); vertical-align:-2px; margin-right:7px;
+  animation:pdfx-spin .7s linear infinite;
+}
+@keyframes pdfx-spin{ to{ transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce){ .pdfx-status .spin{ animation:none; } }
+
+footer{ text-align:center; padding:40px 0 10px; font-size:11.5px; color:var(--ink-muted); }
+
+@media (max-width:980px){
+  .kpi-grid{ grid-template-columns:repeat(3,1fr); }
+  .g2, .g3{ grid-template-columns:1fr; }
+  .insight-grid{ grid-template-columns:1fr; }
+}
+@media (max-width:620px){
+  .kpi-grid{ grid-template-columns:repeat(2,1fr); }
+  .top-inner{ flex-direction:column; align-items:flex-start; }
+  .top-meta{ text-align:left; }
+}
+</style>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brandmark">
+      <div class="mark">JG</div>
+      <div class="titles">
+        <h1>Jaiswal Group</h1>
+        <div class="sub">Electronics Distribution — Business Command Center</div>
+      </div>
+    </div>
+    <div class="top-meta">
+      Report generated <b>29 Aug 2026</b><br>
+      Source: <b>data/stock.xlsx · Customer_details.xlsx</b>
+    </div>
+  </div>
+  <div class="wrap" style="padding-bottom:0;">
+    <nav class="tabs" id="tabs">
+      <a data-t="overview" class="active">Overview</a>
+      <a data-t="inventory">Inventory Intelligence</a>
+      <a data-t="customers">Customers &amp; Credit</a>
+      <a data-t="insights">Strategic Insights</a>
+      <a data-t="converter">Excel Converter</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ OVERVIEW ============ -->
+<section class="view active" id="overview">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Business at a glance</p>
+      <h2>Where the company stands today</h2>
+      <p>Six numbers a distributor's CFO checks first — inventory value, working-capital drag and receivables risk.</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="kpi-overview"></div>
+
+  <div class="callout" style="margin-top:22px;">
+    <div class="txt">
+      <strong>₹38.2L is sitting still</strong>
+      <span>₹12.97L in warehouse stock + ₹25.7L owed by customers — together worth more than 4x last recorded monthly expense activity. Working capital is parked, not moving.</span>
+    </div>
+    <div class="pill gold">Working capital review</div>
+  </div>
+
+  <div class="section-head" style="margin-top:44px;">
+    <div>
+      <p class="eyebrow">Portfolio mix</p>
+      <h2>How value is spread across the business</h2>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Stock value by item category</h3>
+      <p class="cap">Where the ₹12.97L of warehouse capital is currently tied up</p>
+      <div class="donut-wrap">
+        <div id="donut-cat" style="width:188px;height:188px;flex:none;"></div>
+        <div class="legend" id="legend-cat"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Receivables by customer segment</h3>
+      <p class="cap">Who the ₹25.7L of outstanding credit is owed by</p>
+      <div class="donut-wrap">
+        <div id="donut-party" style="width:188px;height:188px;flex:none;"></div>
+        <div class="legend" id="legend-party"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INVENTORY ============ -->
+<section class="view" id="inventory">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Inventory intelligence</p>
+      <h2>Stock health across 289 SKUs</h2>
+      <p>289 SKUs across 5 brands and 3 real product lines (Light, Fan, Wire) — where the value sits, what isn't moving, and where pricing is quietly losing money.</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="kpi-inventory"></div>
+
+  <div class="grid g2" style="margin-top:22px;">
+    <div class="card">
+      <h3>Stock value &amp; SKU count by brand</h3>
+      <p class="cap"><b>Listure</b> and <b>Nordusk</b> carry 89% of SKUs and 92% of stock value — the two brands the business is effectively built on</p>
+      <div id="bars-brand" style="height:200px;"></div>
+    </div>
+    <div class="card">
+      <h3>Average margin % by category</h3>
+      <p class="cap">Blended sell-through margin baked into current price tags, weighted per SKU</p>
+      <div id="bars-margin" style="height:200px;"></div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Where money is stuck or leaking</p>
+      <h2>Dead stock &amp; pricing errors</h2>
+      <p>63 of 289 SKUs (21.8%) show zero stock on hand — either genuinely sold out or awaiting reorder. Separately, 13 SKUs are priced <b style="color:var(--critical)">below their own purchase cost</b>.</p>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Zero-stock SKUs by brand</h3>
+      <p class="cap">Reorder candidates — confirm which are sold-out-and-fast-moving vs. genuinely discontinued</p>
+      <div id="bars-dead" style="height:140px;"></div>
+    </div>
+    <div class="card">
+      <h3>SKUs priced below cost <span class="pill critical" style="margin-left:6px;">margin leak</span></h3>
+      <p class="cap">Selling price is lower than purchase price — every unit sold destroys cash</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Brand</th><th class="num">Margin</th></tr></thead>
+          <tbody id="tbl-negmargin"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Top holdings</p>
+      <h2>Highest-value SKUs in the warehouse</h2>
+      <p>12 items account for a disproportionate share of locked-up capital — worth prioritising in any sell-through push.</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Item</th><th>Category</th><th>Brand</th><th class="num">Qty on hand</th><th class="num">Stock value</th></tr></thead>
+        <tbody id="tbl-topvalue"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CUSTOMERS ============ -->
+<section class="view" id="customers">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Customers &amp; credit</p>
+      <h2>107 accounts, ₹25.7L on the books</h2>
+      <p>Retailer relationships give reach; wholesaler relationships carry the receivables risk. Concentration among a handful of accounts is the single biggest credit exposure.</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="kpi-customers"></div>
+
+  <div class="grid g2" style="margin-top:22px;">
+    <div class="card">
+      <h3>Outstanding by party category</h3>
+      <p class="cap">Wholesalers are <b>15%</b> of accounts but hold <b>55%</b> of receivables — credit terms should reflect that concentration</p>
+      <div id="bars-party" style="height:220px;"></div>
+    </div>
+    <div class="card">
+      <h3>Outstanding by supplied brand</h3>
+      <p class="cap">Nordusk-supplied accounts carry the larger receivables book</p>
+      <div id="bars-prodcat" style="height:220px;"></div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Concentration risk</p>
+      <h2>Top 15 debtors</h2>
+      <p>The top 10 accounts alone hold <b style="color:var(--critical)">61.7%</b> of all outstanding receivables — a single delayed payment from the top 2 moves the needle materially.</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Customer</th><th>Segment</th><th>Brand</th><th class="num">Outstanding</th></tr></thead>
+        <tbody id="tbl-debtors"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSIGHTS ============ -->
+<section class="view" id="insights">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Reading the numbers like an operator</p>
+      <h2>What this data is telling the business</h2>
+      <p>Five calls worth making this quarter, ranked by cash impact.</p>
+    </div>
+  </div>
+
+  <div class="insight-grid" id="insight-cards"></div>
+
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Data coverage</p>
+      <h2>What's missing — and why it matters more than what's here</h2>
+    </div>
+  </div>
+  <div class="gap-note">
+    <span class="pill warning" style="flex:none;">Data gap</span>
+    <div>
+      <b>Sales, purchase and expense registers are currently empty (0 rows each)</b> in <code>sales_transcation.xlsx</code>, <code>purchase_transcation.xlsx</code> and <code>expense.xlsx</code>. This dashboard is built entirely from the two ledgers that do have data — <b>stock</b> and <b>customer/outstanding</b> — so it can show what the business <i>holds</i> and what it's <i>owed</i>, but not yet sales velocity, purchase cadence, stock turnover days, or true operating margin. Once transactions are logged, this dashboard is designed to extend into revenue trends, best-selling SKUs, supplier payment cycles and real P&amp;L margin — the structure below is ready for it.
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXCEL CONVERTER ============ -->
+<section class="view" id="converter">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Register uploader</p>
+      <h2>Excel Converter — Purchase &amp; Sales</h2>
+      <p>Drop in <code>purchase_transcation.xlsx</code> or <code>sales_transcation.xlsx</code> (or any workbook with a similar layout) to preview it as a clean table, see instant totals, and export a normalised <b>.xlsx</b> workbook. Everything runs in your browser — no file is uploaded anywhere.</p>
+    </div>
+  </div>
+
+  <div class="card conv-card" id="conv-pdf-extractor" style="margin-bottom:18px;">
+    <h3>AI Bill Extractor <span class="pill gold" style="margin-left:6px;">Gemini</span></h3>
+    <p class="cap">Upload a purchase bill (PDF) and Gemini extracts exactly these 11 fields per line item: <b>Purchaser Invoice No, JG Invoice No, Supplier Name, Product Category, Item Name, HSN Code, Quantity, Rate (Per Unit), CGST, SGST, Total Amount</b>. Extracted rows load straight into the Purchase register below for export.</p>
+
+    <div class="pdfx-keyrow">
+      <input type="password" id="pdfx-apikey" class="pdfx-input" placeholder="Gemini API key (from aistudio.google.com)" autocomplete="off">
+      <label class="pdfx-remember"><input type="checkbox" id="pdfx-remember"> Remember key in this browser</label>
+    </div>
+
+    <label class="dropzone" for="pdfx-file">
+      <div class="dz-icon">⇪</div>
+      <div class="dz-text"><b>Click to choose a PDF bill</b> or drag it here<br><span>.pdf only · processed via the Gemini API</span></div>
+      <input type="file" id="pdfx-file" accept="application/pdf" hidden>
+    </label>
+
+    <div class="pdfx-status" id="pdfx-status"></div>
+    <div class="tbl-wrap conv-preview" id="pdfx-preview" style="display:none;"></div>
+
+    <div class="gap-note" style="margin-top:14px;">
+      <span class="pill warning" style="flex:none;">Sandbox note</span>
+      <div>
+        This calls Gemini's API directly from the browser (<code>generativelanguage.googleapis.com</code>). That works when this file is opened directly in a normal browser or hosted on your own site, but the <b>claude.ai artifact preview sandbox blocks direct calls to external APIs</b> — inside that preview you'll see a network error instead. Your API key is stored only in <i>this browser's</i> local storage if you tick "Remember", and is sent only to Google's Gemini endpoint, never anywhere else.
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card conv-card" id="conv-purchase">
+      <h3>Purchase register</h3>
+      <p class="cap">Expected columns: Purchaser Invoice No, JG Invoice No, Supplier Name, Product Category, Item Name, HSN Code, Quantity, Rate, CGST, SGST, Total Amount</p>
+      <label class="dropzone" for="file-purchase">
+        <div class="dz-icon">⇪</div>
+        <div class="dz-text"><b>Click to choose a file</b> or drag it here<br><span>.xlsx · .xls · .csv</span></div>
+        <input type="file" id="file-purchase" accept=".xlsx,.xls,.csv" hidden>
+      </label>
+      <div class="conv-summary" id="sum-purchase"></div>
+      <div class="tbl-wrap conv-preview" id="prev-purchase"></div>
+      <div class="conv-actions" id="act-purchase"></div>
+    </div>
+
+    <div class="card conv-card" id="conv-sales">
+      <h3>Sales register</h3>
+      <p class="cap">Expected columns: Invoice No, Customer Name, Product Name, Product Category, HSN Code, Quantity, Rate, CGST, SGST, Total Amount</p>
+      <label class="dropzone" for="file-sales">
+        <div class="dz-icon">⇪</div>
+        <div class="dz-text"><b>Click to choose a file</b> or drag it here<br><span>.xlsx · .xls · .csv</span></div>
+        <input type="file" id="file-sales" accept=".xlsx,.xls,.csv" hidden>
+      </label>
+      <div class="conv-summary" id="sum-sales"></div>
+      <div class="tbl-wrap conv-preview" id="prev-sales"></div>
+      <div class="conv-actions" id="act-sales"></div>
+    </div>
+  </div>
+
+  <div class="gap-note" style="margin-top:22px;">
+    <span class="pill gold" style="flex:none;">How it works</span>
+    <div>
+      The converter reads the first sheet of whatever workbook you drop in, shows the first 200 rows as a preview, and totals any column named <b>Total Amount</b>, <b>Rate</b> × <b>Quantity</b>, or similar. Use <b>Download Excel (.xlsx)</b> to save a proper spreadsheet, or <b>Copy as JSON</b> to paste the rows elsewhere. Nothing is sent to a server — parsing happens entirely in this browser tab via SheetJS. <b>.xlsx isn't on the claude.ai artifact sandbox's allowed download list</b>, so inside that preview the button falls back to a direct browser download, which only completes when this file is opened outside the sandbox (locally, or self-hosted) — same as the Gemini extractor above.
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>Jaiswal Group · Internal business analytics · Built from data/stock.xlsx &amp; Customer_details.xlsx</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.32.0/plotly.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const stockRows = [{"Name": "0.5W NIGHTLAMP BLUE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 20.001, "Selling Price": 320.0, "Qty": 67.0, "Stock Value": 1340.07, "MarginPct": 93.74968750000001}, {"Name": "0.5W NIGHTLAMP CW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 20.001, "Selling Price": 20.99, "Qty": 61.0, "Stock Value": 1220.06, "MarginPct": 4.7117675083372905}, {"Name": "0.5W NIGHTLAMP GREEN, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 20.001, "Selling Price": 1000.0, "Qty": 60.0, "Stock Value": 1200.06, "MarginPct": 97.99990000000001}, {"Name": "0.5W NIGHTLAMP MIX, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 20.001, "Selling Price": 19.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": -0.055027513756892375}, {"Name": "0.5W NIGHTLAMP MIX, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 18.762, "Selling Price": 20.0, "Qty": 180.0, "Stock Value": 3377.16, "MarginPct": 6.189999999999998}, {"Name": "0.5W NIGHTLAMP ORANGE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 20.001, "Selling Price": 0.0, "Qty": 6.0, "Stock Value": 120.01, "MarginPct": NaN}, {"Name": "0.5W NIGHTLAMP PINK, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 16.95, "Selling Price": 23.5, "Qty": 8.0, "Stock Value": 135.6, "MarginPct": 27.872340425531917}, {"Name": "0.5W NIGHTLAMP RED, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 20.001, "Selling Price": 20.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 4.7117675083372905}, {"Name": "0.5W NIGHTLAMP RED, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 17.995, "Selling Price": 23.5, "Qty": 42.0, "Stock Value": 755.79, "MarginPct": 23.425531914893615}, {"Name": "0.5W NIGHTLAMP YELLOW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 16.95, "Selling Price": 0.0, "Qty": 60.0, "Stock Value": 1017.0, "MarginPct": NaN}, {"Name": "0.5W PLUG IN BULB BLUE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 44.84, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 89.68, "MarginPct": NaN}, {"Name": "0.5W PLUG IN BULB RED, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 44.84, "Selling Price": 0.0, "Qty": 4.0, "Stock Value": 179.36, "MarginPct": NaN}, {"Name": "0.5W PLUG IN BULB WHITE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 44.84, "Selling Price": 0.0, "Qty": 5.0, "Stock Value": 224.2, "MarginPct": NaN}, {"Name": "0.75 SQM KH SUPREME BLACK", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1015.0006, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 3045.0, "MarginPct": NaN}, {"Name": "0.75 SQM KH SUPREME RED", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1015.0006, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2030.0, "MarginPct": NaN}, {"Name": "0.75 SQM KH SUPREME YELLOW", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1015.0006, "Selling Price": 0.0, "Qty": 5.0, "Stock Value": 5075.0, "MarginPct": NaN}, {"Name": "0.75 SQM KHAITAN CG BLACK", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1008.9944, "Selling Price": 0.0, "Qty": 4.0, "Stock Value": 4035.98, "MarginPct": NaN}, {"Name": "0.75 SQM KHAITAN CG GREEN", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1008.9944, "Selling Price": 0.0, "Qty": 4.0, "Stock Value": 4035.98, "MarginPct": NaN}, {"Name": "0.75 SQM KHAITAN CG RED", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1008.9944, "Selling Price": 0.0, "Qty": 4.0, "Stock Value": 4035.98, "MarginPct": NaN}, {"Name": "0.75 SQM KHAITAN CG YELLOW", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1008.9944, "Selling Price": 0.0, "Qty": 8.0, "Stock Value": 8071.96, "MarginPct": NaN}, {"Name": "1.0 SQM KH SUPREME BLACK", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1421.0032, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2842.01, "MarginPct": NaN}, {"Name": "1.0 SQM KH SUPREME BLUE", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1421.0032, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2842.01, "MarginPct": NaN}, {"Name": "1.0 SQM KH SUPREME RED", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1421.0032, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 4263.01, "MarginPct": NaN}, {"Name": "1.0 SQM KH SUPREME YELLOW", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1421.0032, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 4263.01, "MarginPct": NaN}, {"Name": "1.0 SQM KHAITAN CG BLACK", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1324.9984, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2650.0, "MarginPct": NaN}, {"Name": "1.0 SQM KHAITAN CG BLUE", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1324.9984, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2650.0, "MarginPct": NaN}, {"Name": "1.0 SQM KHAITAN CG RED", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1324.9984, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2650.0, "MarginPct": NaN}, {"Name": "1.0 SQM KHAITAN CG WHITE", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1324.9984, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2650.0, "MarginPct": NaN}, {"Name": "1.0 SQM KHAITAN CG YELLOW", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 1324.9984, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 2650.0, "MarginPct": NaN}, {"Name": "1.5 SQM KH SUPREME BLACK", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2129.0032, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 6387.01, "MarginPct": NaN}, {"Name": "1.5 SQM KH SUPREME BLUE", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2129.0032, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 4258.01, "MarginPct": NaN}, {"Name": "1.5 SQM KH SUPREME RED", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2129.0032, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 4258.01, "MarginPct": NaN}, {"Name": "1.5 SQM KH SUPREME YELLOW", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2129.0032, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 6387.01, "MarginPct": NaN}, {"Name": "1.5 SQM KHAITAN CG BLACK", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2011.9944, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 6035.98, "MarginPct": NaN}, {"Name": "1.5 SQM KHAITAN CG BLUE", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2011.9944, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 6035.98, "MarginPct": NaN}, {"Name": "1.5 SQM KHAITAN CG RED", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2011.9944, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 4023.99, "MarginPct": NaN}, {"Name": "1.5 SQM KHAITAN CG YELLOW", "Category": "WIRE", "Brand": "khaitan", "Purchase Price": 2011.9944, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 4023.99, "MarginPct": NaN}, {"Name": "100W ECOLIGHT  FLOODLIGHT GG 6500K , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 1150.7006, "Selling Price": 0.0, "Qty": 5.0, "Stock Value": 5753.5, "MarginPct": NaN}, {"Name": "100W ECOLIGHT FLOODLIGHT 6500K LENS, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 1150.7006, "Selling Price": 1355.0, "Qty": 5.0, "Stock Value": 5753.5, "MarginPct": 15.077446494464953}, {"Name": "10W BATTEN 3000K 2FT, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 143.3818, "Selling Price": 125.0, "Qty": 16.0, "Stock Value": 2294.11, "MarginPct": -14.705439999999998}, {"Name": "10W BATTEN 6500K 2FT, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 121.51, "Selling Price": 105.93, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": -14.707825922779191}, {"Name": "10W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 53.4186, "Selling Price": 35.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": -52.62457142857142}, {"Name": "10W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 31.4942, "Selling Price": 33.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 4.563030303030305}, {"Name": "10W Bulkhead SL, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 103.47, "Selling Price": 114.41, "Qty": 35.0, "Stock Value": 3621.45, "MarginPct": 9.562101214928763}, {"Name": "10W EMERGENCY BULB, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 244.9916, "Selling Price": 244.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": -0.0006530878811364836}, {"Name": "12W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 54.9998, "Selling Price": 65.0, "Qty": 40.0, "Stock Value": 2199.99, "MarginPct": 15.384923076923076}, {"Name": "12W DOWNLIGHT BACKLIT SQ D4 6500K,NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 194.995, "Selling Price": 265.5, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 26.555555555555554}, {"Name": "12W MODDER BULB, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 59.0, "Selling Price": 0.0, "Qty": 50.0, "Stock Value": 2950.0, "MarginPct": NaN}, {"Name": "12W SLIM PANEL 6500K (ROUND), NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 234.997, "Selling Price": 0.0, "Qty": 6.0, "Stock Value": 1409.98, "MarginPct": NaN}, {"Name": "12W SLIM PANEL 6500K (SQUARE), NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 254.585, "Selling Price": 0.0, "Qty": 10.0, "Stock Value": 2545.85, "MarginPct": NaN}, {"Name": "15W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 95.3086, "Selling Price": 125.0, "Qty": 65.0, "Stock Value": 6195.06, "MarginPct": 23.753120000000003}, {"Name": "15W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 0.0, "Selling Price": 0.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": NaN}, {"Name": "15W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 102.4948, "Selling Price": 130.0, "Qty": 3.0, "Stock Value": 307.48, "MarginPct": 21.157846153846155}, {"Name": "1600 BAJAJ INDUCTION", "Category": "ELECTRONIC APPLIANCES", "Brand": "Unbranded", "Purchase Price": 2399.9902, "Selling Price": 2399.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": -8.333368072556273e-06}, {"Name": "200W ECOLIGHT NEO FLOODLIGHT GG 3000K LENS, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 1874.9964, "Selling Price": 0.0, "Qty": 10.0, "Stock Value": 18749.96, "MarginPct": NaN}, {"Name": "200W ECOLIGHT NEO FLOODLIGHT GG 6500K LENS, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 1874.9964, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 37499.93, "MarginPct": NaN}, {"Name": "200W ECOLITE FLOODLIGHT LR 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 1854.9954, "Selling Price": 2349.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 21.063689632721832}, {"Name": "200W ECOLITE FLOODLIGHT LR 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 1874.9964, "Selling Price": 2349.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 20.21257962799841}, {"Name": "20L Cooker , Hawkins", "Category": "UTENSILE", "Brand": "Unbranded", "Purchase Price": 0.0, "Selling Price": 0.0, "Qty": 1.0, "Stock Value": 0.0, "MarginPct": NaN}, {"Name": "20W BATTEN 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 147.205, "Selling Price": 0.0, "Qty": 55.0, "Stock Value": 8096.28, "MarginPct": NaN}, {"Name": "20W BATTEN 6500K AL 2FT , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 240.9324, "Selling Price": 245.0, "Qty": 6.0, "Stock Value": 1445.59, "MarginPct": 1.660244897959183}, {"Name": "20W BATTEN 6500K PVC 2FT, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 104.9964, "Selling Price": 120.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 12.503000000000005}, {"Name": "20W BATTEN 6500K PVC 2FT, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 104.9964, "Selling Price": 140.0, "Qty": 48.0, "Stock Value": 5039.83, "MarginPct": 25.002571428571436}, {"Name": "20W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 84.9954, "Selling Price": 78.99, "Qty": 301.0, "Stock Value": -25583.62, "MarginPct": -7.602734523357399}, {"Name": "20W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 84.9954, "Selling Price": 105.0, "Qty": 165.0, "Stock Value": 14024.24, "MarginPct": 19.051999999999996}, {"Name": "20W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 92.04, "Selling Price": 100.0, "Qty": 120.0, "Stock Value": 11044.8, "MarginPct": 7.959999999999994}, {"Name": "20W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 92.04, "Selling Price": 100.0, "Qty": 200.0, "Stock Value": 18408.0, "MarginPct": 7.959999999999994}, {"Name": "20W BATTEN TRICOLOUR , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 109.9996, "Selling Price": 140.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 21.42885714285714}, {"Name": "20W BULB 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 131.57, "Selling Price": 0.0, "Qty": 6.0, "Stock Value": 789.42, "MarginPct": NaN}, {"Name": "20W BULB 650OK, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 131.57, "Selling Price": 155.0, "Qty": 40.0, "Stock Value": 5262.8, "MarginPct": 15.116129032258069}, {"Name": "20W BULB 650OK, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 124.9974, "Selling Price": 174.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 28.568832504714557}, {"Name": "22W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 88.0044, "Selling Price": 94.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 7.354037267080736}, {"Name": "22W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 88.0044, "Selling Price": 105.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 16.186285714285713}, {"Name": "22W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 88.0044, "Selling Price": 105.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 16.186285714285713}, {"Name": "22W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 95.58, "Selling Price": 115.0, "Qty": 50.0, "Stock Value": 4779.0, "MarginPct": 16.886956521739133}, {"Name": "22W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 95.58, "Selling Price": 105.0, "Qty": 160.0, "Stock Value": 15292.8, "MarginPct": 8.971428571428573}, {"Name": "24W BATTEN 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 116.1, "Selling Price": 158.0, "Qty": 9.0, "Stock Value": 1044.9, "MarginPct": 26.518987341772153}, {"Name": "2W DECO BLUE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 62.3748, "Selling Price": 0.0, "Qty": 73.0, "Stock Value": 4553.36, "MarginPct": NaN}, {"Name": "2W DECO CW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 62.3748, "Selling Price": 70.0, "Qty": 9.0, "Stock Value": 561.37, "MarginPct": 10.893142857142857}, {"Name": "2W DECO GREEN, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 62.3748, "Selling Price": 0.0, "Qty": 45.0, "Stock Value": 2806.87, "MarginPct": NaN}, {"Name": "2W DECO PINK, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 62.3748, "Selling Price": 0.0, "Qty": 59.0, "Stock Value": 3680.11, "MarginPct": NaN}, {"Name": "2W DECO RED, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 62.3748, "Selling Price": 0.0, "Qty": 25.0, "Stock Value": 1559.37, "MarginPct": NaN}, {"Name": "2W DECO WW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 52.628, "Selling Price": 70.0, "Qty": 33.0, "Stock Value": 1736.72, "MarginPct": 24.81714285714286}, {"Name": "3+3W SLIM PANEL , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 144.9984, "Selling Price": 164.49, "Qty": 54.0, "Stock Value": 7829.91, "MarginPct": 11.849717308043045}, {"Name": "30W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 207.7036, "Selling Price": 220.0, "Qty": 12.0, "Stock Value": 2492.44, "MarginPct": 5.589272727272729}, {"Name": "30W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 190.4992, "Selling Price": 220.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 13.409454545454544}, {"Name": "30W FLOOD LIGHT K 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 0.0, "Selling Price": 0.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": NaN}, {"Name": "30W FLOOD LIGHT K 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 700.0, "Selling Price": 790.0, "Qty": 20.0, "Stock Value": 14000.0, "MarginPct": 11.39240506329114}, {"Name": "30W FLOOD LIGHT K 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 850.0, "Selling Price": 850.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 0.0}, {"Name": "30W FLOOD LIGHT K 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 593.22, "Selling Price": 790.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 24.908860759493667}, {"Name": "3W DOWNLIGHT 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 60.8644, "Selling Price": 65.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 6.362461538461534}, {"Name": "3W DOWNLIGHT 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 60.8644, "Selling Price": 65.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 6.362461538461534}, {"Name": "3W SLIM PANEL 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 111.51, "Selling Price": 0.0, "Qty": 38.0, "Stock Value": 4237.38, "MarginPct": NaN}, {"Name": "3W STYLIGHT BLUE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 66.7408, "Selling Price": 100.0, "Qty": 11.0, "Stock Value": 734.15, "MarginPct": 33.25920000000001}, {"Name": "3W STYLIGHT CW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 66.7408, "Selling Price": 100.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 33.25920000000001}, {"Name": "3W STYLIGHT GREEN, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 57.8908, "Selling Price": 100.0, "Qty": 37.0, "Stock Value": 2141.96, "MarginPct": 42.1092}, {"Name": "3W STYLIGHT PINK, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 66.7408, "Selling Price": 100.0, "Qty": 6.0, "Stock Value": 400.44, "MarginPct": 33.25920000000001}, {"Name": "3W STYLIGHT RED, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 66.7408, "Selling Price": 100.0, "Qty": 12.0, "Stock Value": 800.89, "MarginPct": 33.25920000000001}, {"Name": "3W STYLIGHT WW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 57.0176, "Selling Price": 79.99, "Qty": 25.0, "Stock Value": 1425.44, "MarginPct": 28.71908988623577}, {"Name": "40W BATTEN AL 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 254.998, "Selling Price": 320.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 20.313125000000003}, {"Name": "40W BATTEN PVC 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 254.998, "Selling Price": 334.99, "Qty": 57.0, "Stock Value": 14534.89, "MarginPct": 23.87892175885848}, {"Name": "40W BATTEN PVC 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 254.998, "Selling Price": 284.99, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 10.523878030808104}, {"Name": "40W BATTEN PVC 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 287.9082, "Selling Price": 334.99, "Qty": 60.0, "Stock Value": 17274.49, "MarginPct": 14.054688199647746}, {"Name": "40W BULB 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 433.7208, "Selling Price": 420.0, "Qty": 10.0, "Stock Value": 4337.21, "MarginPct": -3.266857142857142}, {"Name": "40W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 241.53, "Selling Price": 340.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 28.961764705882352}, {"Name": "45W STREETLIGHT 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 899.9978, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 17999.96, "MarginPct": NaN}, {"Name": "50W BULB 6500K , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 344.9966, "Selling Price": 319.99, "Qty": 5.0, "Stock Value": 1724.98, "MarginPct": -7.814806712709769}, {"Name": "50W BULB 6500K , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 369.34, "Selling Price": 380.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 2.805263157894743}, {"Name": "50W ECOLIGHT FLOODLIGHT LR 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 652.3984, "Selling Price": 750.0, "Qty": 10.0, "Stock Value": 6523.98, "MarginPct": 13.013546666666661}, {"Name": "50W ECOLIGHT FLOODLIGHT LR 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 652.3984, "Selling Price": 750.0, "Qty": 10.0, "Stock Value": 6523.98, "MarginPct": 13.013546666666661}, {"Name": "50W ECOLIGHT FLOODLIGHT LR 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 552.88, "Selling Price": 775.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 28.660645161290322}, {"Name": "50W ECOLIGHT FLOODLIGHT LR 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 552.88, "Selling Price": 775.0, "Qty": 20.0, "Stock Value": 11057.6, "MarginPct": 28.660645161290322}, {"Name": "50W FLOODLIGHT 6500K (GALAXY PLUS), NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 0.0, "Selling Price": 950.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 100.0}, {"Name": "50W K FLOODLIGHT  GG 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 0.0, "Selling Price": 850.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 100.0}, {"Name": "5W CANDEL LIGHT BULB, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 88.7242, "Selling Price": 0.0, "Qty": 7.0, "Stock Value": 621.07, "MarginPct": NaN}, {"Name": "6+3W SLIM PANEL, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 210.0046, "Selling Price": 7200.0, "Qty": 164.0, "Stock Value": 34440.75, "MarginPct": 97.08326944444444}, {"Name": "6+6W SLIM PANEL , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 221.0494, "Selling Price": 250.0, "Qty": 20.0, "Stock Value": 4420.99, "MarginPct": 11.580240000000003}, {"Name": "6+6W SLIM PANEL , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 199.9982, "Selling Price": 234.0, "Qty": 1.0, "Stock Value": 200.0, "MarginPct": 14.530683760683763}, {"Name": "60W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 414.9942, "Selling Price": 505.0, "Qty": 5.0, "Stock Value": 2074.97, "MarginPct": 17.82293069306931}, {"Name": "6W D7 Conceal Light  3000K,Nordusk", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 61.25, "Selling Price": 85.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 27.941176470588236}, {"Name": "6W D7 Conceal Light Blue,Nordusk", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 72.28, "Selling Price": 85.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 14.964705882352941}, {"Name": "6W D7 Conceal Light Green,Nordusk", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 61.25, "Selling Price": 85.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 27.941176470588236}, {"Name": "6W D7 Conceal Light Pink,Nordusk", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 61.25, "Selling Price": 85.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 27.941176470588236}, {"Name": "6W DOWNLIGHT D6 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 0.0, "Selling Price": 0.0, "Qty": 18.0, "Stock Value": 0.0, "MarginPct": NaN}, {"Name": "6W DOWNLIGHT D6 BLUE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 122.96, "Selling Price": 0.0, "Qty": 39.0, "Stock Value": 4795.44, "MarginPct": NaN}, {"Name": "6W DOWNLIGHT D6 CW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 145.0928, "Selling Price": 0.0, "Qty": 9.0, "Stock Value": 1305.84, "MarginPct": NaN}, {"Name": "6W DOWNLIGHT D6 GREEN, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 145.0928, "Selling Price": 0.0, "Qty": 25.0, "Stock Value": 3627.32, "MarginPct": NaN}, {"Name": "6W DOWNLIGHT D6 PINK, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 145.0928, "Selling Price": 0.0, "Qty": 33.0, "Stock Value": 4788.06, "MarginPct": NaN}, {"Name": "6W DOWNLIGHT D6 RED, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 145.0928, "Selling Price": 0.0, "Qty": 33.0, "Stock Value": 4788.06, "MarginPct": NaN}, {"Name": "6W DOWNLIGHT D6 WW, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 145.0928, "Selling Price": 150.0, "Qty": 27.0, "Stock Value": 3917.51, "MarginPct": 3.2714666666666594}, {"Name": "6W DOWNLIGHT D7 3000K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 69.9976, "Selling Price": 0.0, "Qty": 40.0, "Stock Value": 2799.9, "MarginPct": NaN}, {"Name": "6W DOWNLIGHT D7 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 69.9976, "Selling Price": 148.0, "Qty": 34.0, "Stock Value": 2379.92, "MarginPct": 52.704324324324325}, {"Name": "6W SLIM PANEL 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 147.9956, "Selling Price": 154.99, "Qty": 1.0, "Stock Value": 148.0, "MarginPct": 4.512807277888904}, {"Name": "6W SURFACE 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 223.3032, "Selling Price": 245.0, "Qty": 75.0, "Stock Value": 16747.74, "MarginPct": 8.855836734693876}, {"Name": "7W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 54.28, "Selling Price": 34.9988, "Qty": 83.0, "Stock Value": 4505.24, "MarginPct": -55.09103169251516}, {"Name": "7W BULB BLUE, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 75.5908, "Selling Price": 0.0, "Qty": 33.0, "Stock Value": 2494.5, "MarginPct": NaN}, {"Name": "8W Light  Bank Neo Roundy Solar GG 6500k", "Category": "FAN", "Brand": "Nordusk", "Purchase Price": 699.0, "Selling Price": 0.0, "Qty": 19.0, "Stock Value": 13281.0, "MarginPct": NaN}, {"Name": "9W BULB 3000K , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 30.2434, "Selling Price": 30.4, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 0.51513157894736}, {"Name": "9W BULB 3000K , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 28.0014, "Selling Price": 33.0, "Qty": 67.0, "Stock Value": 1876.09, "MarginPct": 15.147272727272727}, {"Name": "9W BULB 3000K , NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 30.2434, "Selling Price": 35.0, "Qty": 299.0, "Stock Value": 9042.78, "MarginPct": 13.59028571428571}, {"Name": "9W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 30.2434, "Selling Price": 33.0, "Qty": 59.0, "Stock Value": 1784.36, "MarginPct": 8.35333333333333}, {"Name": "9W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 30.2434, "Selling Price": 32.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 5.489374999999996}, {"Name": "9W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 28.0014, "Selling Price": 29.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 3.4434482758620684}, {"Name": "9W BULB 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 30.2434, "Selling Price": 25.63, "Qty": 600.0, "Stock Value": 18146.04, "MarginPct": -18.00000000000001}, {"Name": "9W SLIM PANEL 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 159.9962, "Selling Price": 160.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 0.0023750000000077875}, {"Name": "9W SLIM PANEL 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 178.003, "Selling Price": 200.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 10.998500000000007}, {"Name": "9W SLIM PANEL SQ A7 6500K, NORDUSK", "Category": "LIGHT", "Brand": "Nordusk", "Purchase Price": 150.85, "Selling Price": 0.0, "Qty": 40.0, "Stock Value": 6034.0, "MarginPct": NaN}, {"Name": "AD 101 12W RD Slim Panel (Cuba) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 0.0, "Selling Price": 0.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": NaN}, {"Name": "AD 101 3W RD Slim Panel (Cuba) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 2655.0, "Selling Price": 248.0006, "Qty": 26.0, "Stock Value": -69030.0, "MarginPct": -970.5619260598563}, {"Name": "AD 101 8W RD Slim Panel (Cuba) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 106.2, "Selling Price": 0.0, "Qty": 40.0, "Stock Value": 4248.0, "MarginPct": NaN}, {"Name": "AD 102 22W RD Surface Panel (Boost) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 147.5, "Selling Price": 172.9998, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 14.739785826341992}, {"Name": "AD 105 15W RD PC Downlight (Blaster) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 418.9, "Selling Price": 502.9986, "Qty": 10.0, "Stock Value": -4189.0, "MarginPct": 16.719450113777658}, {"Name": "AD 106 15W RD PC Downlight (Blaster) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 177.0, "Selling Price": 0.0, "Qty": 30.0, "Stock Value": 5310.0, "MarginPct": NaN}, {"Name": "AD 106 8W RD PC Downlight (Blaster) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 177.0, "Selling Price": 197.9922, "Qty": 25.0, "Stock Value": -4425.0, "MarginPct": 10.602538887895582}, {"Name": "AD 107 22W RD Surface Panel (Boost) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 100.3, "Selling Price": 0.0, "Qty": 30.0, "Stock Value": 3009.0, "MarginPct": NaN}, {"Name": "AD 108 12W RD Silm Panel (Cosmic) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 418.9, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 8378.0, "MarginPct": NaN}, {"Name": "AD 108 15W RD Slim Panel (Cosmic) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 200.6, "Selling Price": 0.0, "Qty": 30.0, "Stock Value": 6018.0, "MarginPct": NaN}, {"Name": "AD 108 15W RD Slim Panel (Cosmic) WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 211.22, "Selling Price": 230.0056, "Qty": 10.0, "Stock Value": 2112.2, "MarginPct": 8.167453314180172}, {"Name": "AD 108 3W RD Slim Panel (Cosmic) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 200.6, "Selling Price": 264.0014, "Qty": 24.0, "Stock Value": 4814.4, "MarginPct": 24.015554462968755}, {"Name": "AD 108 8W RD Slim Panel (Cosmic) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 103.84, "Selling Price": 159.9962, "Qty": 20.0, "Stock Value": 2076.8, "MarginPct": 35.098458588391466}, {"Name": "AD 108 8W RD Slim Panel (Cosmic) WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 135.7, "Selling Price": 155.996, "Qty": 80.0, "Stock Value": 10856.0, "MarginPct": 13.010590015128606}, {"Name": "AD 112 3+3W RD Double Colour Panel CW+MULTICOLOR", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 135.7, "Selling Price": 0.0, "Qty": 40.0, "Stock Value": 5428.0, "MarginPct": NaN}, {"Name": "AD 112 6+3W RD Double Colour Panel CW+MULTICOLOR", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 147.5, "Selling Price": 177.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 16.666666666666664}, {"Name": "AD 116-12W RD Panel Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 174.994, "Selling Price": 185.0004, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 5.408853170047207}, {"Name": "AD 118 15W RD Rimless Surface Panel CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 118.0, "Selling Price": 137.3992, "Qty": 54.0, "Stock Value": 6372.0, "MarginPct": 14.118859498454144}, {"Name": "AD 118 15W RD Rimless Surface Panel WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 224.2, "Selling Price": 244.9916, "Qty": 17.0, "Stock Value": 3811.4, "MarginPct": 8.486658318081117}, {"Name": "AD 118 22W RD Rimless Surface Panel CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 194.7, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 3894.0, "MarginPct": NaN}, {"Name": "AD 118 6W RD Rimless Surface Panel CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 312.7, "Selling Price": 379.9954, "Qty": 20.0, "Stock Value": 6254.0, "MarginPct": 17.70953016799678}, {"Name": "AD 118 8W RD Rimless Surface Panel CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 127.44, "Selling Price": 0.0, "Qty": 40.0, "Stock Value": 5097.6, "MarginPct": NaN}, {"Name": "AD 120 22W T5 Tube Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 133.34, "Selling Price": 160.952, "Qty": 9.0, "Stock Value": -1200.06, "MarginPct": 17.155425219941346}, {"Name": "AD 121 36W T8 Tube Light", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 77.4434, "Selling Price": 91.922, "Qty": 360.0, "Stock Value": 27879.62, "MarginPct": 15.750962772785623}, {"Name": "AD 204 50W Flood Light (Apple) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 230.1, "Selling Price": 244.0004, "Qty": 170.0, "Stock Value": 39117.0, "MarginPct": 5.696875906760816}, {"Name": "AD 209 200W Highbay Light (UFO) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 481.44, "Selling Price": 529.997, "Qty": 12.0, "Stock Value": 5777.28, "MarginPct": 9.161749972169646}, {"Name": "AD 311 20W Street Light (Thunder) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 76.7, "Selling Price": 2407.495, "Qty": 37.0, "Stock Value": 2837.9, "MarginPct": 96.81411591716702}, {"Name": "AD 311 24W Street Light (Thunder) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 403.56, "Selling Price": 451.999, "Qty": 4.0, "Stock Value": 1614.24, "MarginPct": 10.716616629682814}, {"Name": "AD 311 36W Street Light (Thunder) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 409.46, "Selling Price": 455.7396, "Qty": 9.0, "Stock Value": 3685.14, "MarginPct": 10.154834032416762}, {"Name": "AD 311 50W Street Light (Thunder) CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 526.28, "Selling Price": 585.398, "Qty": 15.0, "Stock Value": 7894.2, "MarginPct": 10.098770409191705}, {"Name": "AD 401 3W RD COB Button (Magic) Blue", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 678.5, "Selling Price": 729.9952, "Qty": 1.0, "Stock Value": 678.5, "MarginPct": 7.054183369972838}, {"Name": "AD 401 3W RD COB Button (Magic) Pink", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 49.56, "Selling Price": 59.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 15.999999999999995}, {"Name": "AD 507 LED ROPE LIGHT Adapter", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 49.56, "Selling Price": 59.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 15.999999999999995}, {"Name": "AD 603 8W RD Concealed Mirage CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 41.3, "Selling Price": 0.0, "Qty": 300.0, "Stock Value": 12390.0, "MarginPct": NaN}, {"Name": "AD 606-3W RD Junction Box Light (3IN1) PBV", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 63.72, "Selling Price": 0.0, "Qty": 100.0, "Stock Value": 6372.0, "MarginPct": NaN}, {"Name": "AD 606-3W RD Junction Box Light (3IN1) PGC", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 59.0, "Selling Price": 0.0, "Qty": 100.0, "Stock Value": 5900.0, "MarginPct": NaN}, {"Name": "AD 614 7W RD COB Concealed CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 59.0, "Selling Price": 69.9976, "Qty": 100.0, "Stock Value": 5900.0, "MarginPct": 15.71139581928524}, {"Name": "AD 614 7W RD COB Concealed WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 118.0, "Selling Price": 0.0, "Qty": 50.0, "Stock Value": 5900.0, "MarginPct": NaN}, {"Name": "AD 625 3W RD PC Stricker CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 118.0, "Selling Price": 134.0008, "Qty": 15.0, "Stock Value": 1770.0, "MarginPct": 11.94082423388517}, {"Name": "AD 625 3W RD PC Stricker WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 43.66, "Selling Price": 60.18, "Qty": 50.0, "Stock Value": 2183.0, "MarginPct": 27.450980392156872}, {"Name": "AD 701 10W Bulk Head CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 43.66, "Selling Price": 50.9996, "Qty": 10.0, "Stock Value": 436.6, "MarginPct": 14.391485423415093}, {"Name": "AD 701 20W Bulk Head CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 112.1, "Selling Price": 136.4316, "Qty": 70.0, "Stock Value": 7847.0, "MarginPct": 17.834284725825988}, {"Name": "AD 701 20W Bulk Head WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 174.64, "Selling Price": 183.844, "Qty": 76.0, "Stock Value": 13272.64, "MarginPct": 5.0064184852374884}, {"Name": "AD 801 12W RD Deep Cob Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 158.12, "Selling Price": 194.995, "Qty": 20.0, "Stock Value": 3162.4, "MarginPct": 18.910741301059}, {"Name": "AD 810 2W 2 Way Fancy Led Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 271.4, "Selling Price": 327.0016, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 17.00346420323326}, {"Name": "AD 810 4W 4 Way Fancy Led Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 220.66, "Selling Price": 257.9952, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 14.471276984998175}, {"Name": "AD 818 10W COB Track Light CW (B)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 236.0, "Selling Price": 276.002, "Qty": 16.0, "Stock Value": 3776.0, "MarginPct": 14.493373236425827}, {"Name": "AD 818 10W COB Track Light WW (B)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 320.96, "Selling Price": 461.0024, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 30.37780280536501}, {"Name": "AD 818 20W COB Track Light WW (B)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 440.4114, "Selling Price": 0.0, "Qty": 10.0, "Stock Value": 4404.11, "MarginPct": NaN}, {"Name": "AD 818 30W COB Track Light CW (B)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 495.6, "Selling Price": 594.9914, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 16.70467842056204}, {"Name": "AD 818 30W COB Track Light WW (B)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 637.2, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 12744.0, "MarginPct": NaN}, {"Name": "AD 818 50W COB Track Light WW (B)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 637.2, "Selling Price": 764.994, "Qty": 16.0, "Stock Value": 10195.2, "MarginPct": 16.70522906062008}, {"Name": "AD 819 16W Wall Light CW (W)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 967.6, "Selling Price": 0.0, "Qty": 6.0, "Stock Value": 5805.6, "MarginPct": NaN}, {"Name": "AD 819 3W Wall Light CW (W)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 501.5, "Selling Price": 587.0028, "Qty": 4.0, "Stock Value": 2006.0, "MarginPct": 14.565995255899969}, {"Name": "AD 819 3W Wall Light WW (W)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 218.3, "Selling Price": 264.9926, "Qty": 3.0, "Stock Value": 654.9, "MarginPct": 17.620341096317397}, {"Name": "AD 819 6W Wall Light CW (W)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 218.3, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 4366.0, "MarginPct": NaN}, {"Name": "AD 819 6W Wall Light WW (W)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 265.5, "Selling Price": 320.0042, "Qty": 3.0, "Stock Value": 796.5, "MarginPct": 17.03233895055128}, {"Name": "AD 901 30W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 265.5, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 5310.0, "MarginPct": NaN}, {"Name": "AD 901 50W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 165.2, "Selling Price": 209.9928, "Qty": 235.0, "Stock Value": 38822.0, "MarginPct": 21.33063609799955}, {"Name": "AD 902 0.5W Led Bulb Blue", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 271.4, "Selling Price": 301.8912, "Qty": 27.0, "Stock Value": 7327.8, "MarginPct": 10.100062539086945}, {"Name": "AD 902 0.5W Led Bulb Green", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 17.995, "Selling Price": 25.0042, "Qty": 48.0, "Stock Value": 863.76, "MarginPct": 28.032090608777725}, {"Name": "AD 902 0.5W Led Bulb Pink", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 17.995, "Selling Price": 25.0042, "Qty": 48.0, "Stock Value": 863.76, "MarginPct": 28.032090608777725}, {"Name": "AD 902 0.5W Led Bulb Red", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 17.995, "Selling Price": 25.0042, "Qty": 48.0, "Stock Value": 863.76, "MarginPct": 28.032090608777725}, {"Name": "AD 902 0.5W Led Bulb Yellow", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 17.995, "Selling Price": 25.0042, "Qty": 48.0, "Stock Value": 863.76, "MarginPct": 28.032090608777725}, {"Name": "AD 902 12W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 17.995, "Selling Price": 25.0042, "Qty": 48.0, "Stock Value": 863.76, "MarginPct": 28.032090608777725}, {"Name": "AD 902 15W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 49.56, "Selling Price": 59.9912, "Qty": 400.0, "Stock Value": 19824.0, "MarginPct": 17.387883556254913}, {"Name": "AD 902 16W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 61.36, "Selling Price": 79.9922, "Qty": 65.0, "Stock Value": 3988.4, "MarginPct": 23.292521020799526}, {"Name": "AD 902 18W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 64.9, "Selling Price": 0.0, "Qty": 50.0, "Stock Value": 3245.0, "MarginPct": NaN}, {"Name": "AD 902 20W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 106.2, "Selling Price": 84.0042, "Qty": 110.0, "Stock Value": 11682.0, "MarginPct": -26.422250316055635}, {"Name": "AD 902 24W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 112.1, "Selling Price": 125.9886, "Qty": 1.0, "Stock Value": 112.1, "MarginPct": 11.023695794698893}, {"Name": "AD 902 36W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 112.1, "Selling Price": 154.993, "Qty": 230.0, "Stock Value": 25783.0, "MarginPct": 27.674153026265703}, {"Name": "AD 902 36W Led Bulb WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 182.9, "Selling Price": 225.0024, "Qty": 39.0, "Stock Value": 7133.1, "MarginPct": 18.711978183343817}, {"Name": "AD 902 45W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 165.2, "Selling Price": 0.0, "Qty": 40.0, "Stock Value": 6608.0, "MarginPct": NaN}, {"Name": "AD 902 45W Led Bulb WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 224.2, "Selling Price": 257.9952, "Qty": 73.0, "Stock Value": 16366.6, "MarginPct": 13.099158433955369}, {"Name": "AD 902 55W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 259.6, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 5192.0, "MarginPct": NaN}, {"Name": "AD 902 55W Led Bulb WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 271.4, "Selling Price": 312.0, "Qty": 10.0, "Stock Value": 2714.0, "MarginPct": 13.01282051282052}, {"Name": "AD 902 65W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 271.4, "Selling Price": 359.9944, "Qty": 8.0, "Stock Value": 2171.2, "MarginPct": 24.609938376819198}, {"Name": "AD 902 65W Led Bulb WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 330.4, "Selling Price": 355.9942, "Qty": 28.0, "Stock Value": 9251.2, "MarginPct": 7.189499154761511}, {"Name": "AD 902 9W Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 330.4, "Selling Price": 380.9984, "Qty": 18.0, "Stock Value": 5947.2, "MarginPct": 13.280475718533207}, {"Name": "AD 902 9W Led Bulb WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 10.502, "Selling Price": 31.9898, "Qty": 850.0, "Stock Value": 8926.7, "MarginPct": 67.17078568793802}, {"Name": "AD 903 10W EMERGENCY Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 10.502, "Selling Price": 25.9954, "Qty": 2750.0, "Stock Value": 28880.5, "MarginPct": 59.6005447117567}, {"Name": "AD 903 20W EMERGENCY Led Bulb CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 185.26, "Selling Price": 217.9932, "Qty": 34.0, "Stock Value": 6298.84, "MarginPct": 15.01569773736062}, {"Name": "AD 911- Mosquito Racquet (400MA 4V)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 359.9, "Selling Price": 429.992, "Qty": 2.0, "Stock Value": 719.8, "MarginPct": 16.300768386388594}, {"Name": "AD-116-12W RD Panel Light 3 IN 1 (CWN)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 188.8, "Selling Price": 246.738, "Qty": 21.0, "Stock Value": -3964.8, "MarginPct": 23.481587757054037}, {"Name": "AD-116-12W RD Panel Light 3 IN 1 (PBV)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 123.9, "Selling Price": 123.9944, "Qty": 205.0, "Stock Value": 25399.5, "MarginPct": 0.07613247049866216}, {"Name": "AD-116-12W RD Panel Light 3 IN 1 (PGC)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 129.8, "Selling Price": 0.0, "Qty": 30.0, "Stock Value": 3894.0, "MarginPct": NaN}, {"Name": "AD-116-12W RD Panel Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 123.9, "Selling Price": 123.9944, "Qty": 120.0, "Stock Value": 14868.0, "MarginPct": 0.07613247049866216}, {"Name": "AD-116-18W RD Panel Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 118.0, "Selling Price": 123.9944, "Qty": 60.0, "Stock Value": 7080.0, "MarginPct": 4.8344118766653965}, {"Name": "AD-116-6W RD Panel Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 182.9, "Selling Price": 213.993, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 14.529914529914526}, {"Name": "AD-116-6W RD Panel Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 70.8, "Selling Price": 82.9894, "Qty": 50.0, "Stock Value": 3540.0, "MarginPct": 14.687899900469223}, {"Name": "AD-221-100W DOB Lens Flood Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 70.8, "Selling Price": 82.9894, "Qty": 30.0, "Stock Value": -2124.0, "MarginPct": 14.687899900469223}, {"Name": "AD-221-100W DOB Lens Flood Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 784.7, "Selling Price": 944.0, "Qty": 5.0, "Stock Value": 3923.5, "MarginPct": 16.874999999999996}, {"Name": "AD-221-10W DOB Lens Flood Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 784.7, "Selling Price": 948.0002, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 17.22575585954517}, {"Name": "AD-221-200W DOB Lens Flood Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 253.7, "Selling Price": 305.9976, "Qty": 16.0, "Stock Value": 4059.2, "MarginPct": 17.090853000154247}, {"Name": "AD-221-200W DOB Lens Flood Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 1604.8, "Selling Price": 1937.9966, "Qty": 4.0, "Stock Value": 6419.2, "MarginPct": 17.192837180416106}, {"Name": "AD-221-30W DOB Lens Flood Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 1685.04, "Selling Price": 0.0, "Qty": 5.0, "Stock Value": 8425.2, "MarginPct": NaN}, {"Name": "AD-221-50W DOB Lens Flood Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 424.8, "Selling Price": 480.0004, "Qty": 40.0, "Stock Value": 16992.0, "MarginPct": 11.500073749938542}, {"Name": "AD-221-50W DOB Lens Flood Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 481.44, "Selling Price": 639.9966, "Qty": 6.0, "Stock Value": 2888.64, "MarginPct": 24.774600365064433}, {"Name": "AD-501-Driver OVP 50W", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 578.2, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 11564.0, "MarginPct": NaN}, {"Name": "AD-502 8-24W Panel Driver", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 185.083, "Selling Price": 0.0, "Qty": 50.0, "Stock Value": 9254.15, "MarginPct": NaN}, {"Name": "AD-602-12W RD Glory Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 71.6024, "Selling Price": 0.0, "Qty": 50.0, "Stock Value": 3580.12, "MarginPct": NaN}, {"Name": "AD-602-12W RD Glory Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 171.1, "Selling Price": 199.9982, "Qty": 60.0, "Stock Value": 10266.0, "MarginPct": 14.449230043070388}, {"Name": "AD-602-6W RD Glory Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 171.1, "Selling Price": 199.9982, "Qty": 20.0, "Stock Value": 3422.0, "MarginPct": 14.449230043070388}, {"Name": "AD-602-6W RD Glory Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 105.02, "Selling Price": 177.0, "Qty": 40.0, "Stock Value": 4200.8, "MarginPct": 40.666666666666664}, {"Name": "AD-603-8W RD Concealed Mirage 3 IN 1 (PGC)", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 105.02, "Selling Price": 177.0, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 40.666666666666664}, {"Name": "AD-606-3W RD Junction Box Light CW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 94.4, "Selling Price": 0.0, "Qty": 100.0, "Stock Value": 9440.0, "MarginPct": NaN}, {"Name": "AD-606-3W RD Junction Box Light WW", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 38.94, "Selling Price": 49.0054, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 20.539369130748863}, {"Name": "AD-617-8W Deep Junction Light Rainbow", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 38.94, "Selling Price": 49.0054, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 20.539369130748863}, {"Name": "AD-904-10W -T/BULB", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 135.7, "Selling Price": 142.0012, "Qty": 30.0, "Stock Value": 4071.0, "MarginPct": 4.437427289346866}, {"Name": "AD-904-12W -T/BULB", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 115.64, "Selling Price": 130.0006, "Qty": 10.0, "Stock Value": 1156.4, "MarginPct": 11.046564400471992}, {"Name": "CEILING FAN 36\" BROWN, RASHMI", "Category": "FAN", "Brand": "Rashmi", "Purchase Price": 120.36, "Selling Price": 138.9922, "Qty": 15.0, "Stock Value": -1805.4, "MarginPct": 13.405212666610067}, {"Name": "CEILING FAN 48\" BROWN,RASHMI", "Category": "FAN", "Brand": "Rashmi", "Purchase Price": 1449.9958, "Selling Price": 1750.0, "Qty": 1.0, "Stock Value": 1450.0, "MarginPct": 17.143097142857147}, {"Name": "DUO PLUS SURFACE ROUND RING", "Category": "LIGHT", "Brand": "Listure", "Purchase Price": 1289.9996, "Selling Price": 1599.01, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 19.32510741021006}, {"Name": "FD-416BRN (Avenger Brown),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 23.6, "Selling Price": 0.0, "Qty": 20.0, "Stock Value": 472.0, "MarginPct": NaN}, {"Name": "FD-416IVY (Avenger Ivory),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 1225.7958, "Selling Price": 1349.9908, "Qty": 15.0, "Stock Value": 18386.94, "MarginPct": 9.199692323829165}, {"Name": "FD-416WHT (Avenger White),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 1225.7958, "Selling Price": 1349.9908, "Qty": 1.0, "Stock Value": 1225.8, "MarginPct": 9.199692323829165}, {"Name": "FD-417BRN (Storm Glossy Brown),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 1225.7958, "Selling Price": 1349.9908, "Qty": 5.0, "Stock Value": 6128.98, "MarginPct": 9.199692323829165}, {"Name": "FD-417IVY (Storm Ivory),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 1150.5, "Selling Price": 1349.9908, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 14.777197000157335}, {"Name": "FD-417SMBRN (Storm Smoke Brown),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 1049.9994, "Selling Price": 1349.9908, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 22.22173662220514}, {"Name": "FD-420BLK (Typhoon Black),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 1049.9994, "Selling Price": 1350.0026, "Qty": 4.0, "Stock Value": 4200.0, "MarginPct": 22.22241646053127}, {"Name": "FD-420GLD (Typhoon Gold),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.96, "Selling Price": 2220.0048, "Qty": 4.0, "Stock Value": 8599.84, "MarginPct": 3.155164349194205}, {"Name": "FD-420GRY (Typhoon Grey),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.901, "Selling Price": 2249.906, "Qty": 3.0, "Stock Value": 6449.7, "MarginPct": 4.444852362720937}, {"Name": "FD-420IVY (Typhoon Ivory),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.901, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 6449.7, "MarginPct": NaN}, {"Name": "FD-420WHT (Typhoon White),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.9364, "Selling Price": 2177.1, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 1.2476964769647632}, {"Name": "FD-424BLK (Mighty Black),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.96, "Selling Price": 2249.906, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 4.442230030943511}, {"Name": "FD-424GLD (Mighty Gold),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.96, "Selling Price": 2250.0004, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 4.446239209557468}, {"Name": "FD-424GRY (Mighty Grey),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2150.019, "Selling Price": 2249.9886, "Qty": 5.0, "Stock Value": 10750.1, "MarginPct": 4.443115845120298}, {"Name": "FD-424SVR (Mighty Silver),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2150.019, "Selling Price": 2249.906, "Qty": 9.0, "Stock Value": 19350.17, "MarginPct": 4.439607699166107}, {"Name": "FD-424WHT (Mighty White),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.96, "Selling Price": 2299.997, "Qty": 3.0, "Stock Value": 6449.88, "MarginPct": 6.523356334812602}, {"Name": "FD-425BRS (MWR Brass),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2150.019, "Selling Price": 2249.9886, "Qty": 3.0, "Stock Value": 6450.06, "MarginPct": 4.443115845120298}, {"Name": "FD-425RWD (MWR Rose Wood),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2900.3338, "Selling Price": 0.0, "Qty": 3.0, "Stock Value": 8701.0, "MarginPct": NaN}, {"Name": "FD-426GLD(Mighty Pro Gold),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2900.3692, "Selling Price": 3079.9888, "Qty": 1.0, "Stock Value": 2900.37, "MarginPct": 5.831826401446654}, {"Name": "FD-426IVY(Mighty Pro Ivory),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.96, "Selling Price": 2364.9914, "Qty": 22.0, "Stock Value": 47299.12, "MarginPct": 9.09226984926879}, {"Name": "FD-428BLK (Flora Black),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2149.96, "Selling Price": 2350.0054, "Qty": 3.0, "Stock Value": 6449.88, "MarginPct": 8.512550652011267}, {"Name": "FD-428BLU (Flora Blue),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2940.5364, "Selling Price": 0.0, "Qty": 2.0, "Stock Value": 5881.07, "MarginPct": NaN}, {"Name": "FD-428GLD (Flora Gold),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2940.56, "Selling Price": 3235.0054, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 9.101851885625912}, {"Name": "FD-428GRY (Flora Grey),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2940.4774, "Selling Price": 3235.0054, "Qty": 6.0, "Stock Value": 17642.86, "MarginPct": 9.10440520439316}, {"Name": "FD-428WHT (Flora White),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2940.4774, "Selling Price": 3235.0054, "Qty": 3.0, "Stock Value": 8821.43, "MarginPct": 9.10440520439316}, {"Name": "FD-432GLD (Cilento ABS Gold),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 2940.5364, "Selling Price": 3130.186, "Qty": 1.0, "Stock Value": 2940.54, "MarginPct": 6.058732612055647}, {"Name": "FD-432GRY (Cilento ABS Grey),Lister", "Category": "FAN", "Brand": "Listure", "Purchase Price": 3200.2426, "Selling Price": 3519.999, "Qty": 0.0, "Stock Value": 0.0, "MarginPct": 9.083991217042954}, {"Name": "nan", "Category": "Unclassified", "Brand": "Unbranded", "Purchase Price": 3200.2426, "Selling Price": 3519.999, "Qty": 1.0, "Stock Value": 3200.24, "MarginPct": 9.083991217042954}, {"Name": "nan", "Category": "Unclassified", "Brand": "Unbranded", "Purchase Price": 0.0, "Selling Price": 147.0, "Qty": 1.0, "Stock Value": 0.0, "MarginPct": 100.0}];
+const custRows = [{"Customer Name": "Adsun Lighting Private Limited West Bengal", "Outstanding": 31656.0, "Party Category": "Supplier", "Product Category": "Nordusk"}, {"Customer Name": "Akash Electrics", "Outstanding": 1605.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Ali Electric & Electronics", "Outstanding": 9608.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Allied India Technologies Pvt Ltd", "Outstanding": 0.0, "Party Category": "Supplier", "Product Category": "Listure"}, {"Customer Name": "Amar Electric", "Outstanding": 3283.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Amisha Electric", "Outstanding": 829.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Anjali Electric", "Outstanding": 402.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "ANKUR MOBITEC", "Outstanding": 287839.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "Bagmar Electric", "Outstanding": 13457.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Banerjee Electrics Co", "Outstanding": 11789.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Banik Electric", "Outstanding": 986.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Bappi Electric", "Outstanding": 153.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Bhaterchariya Electric", "Outstanding": 7705.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Biplab Enterprise", "Outstanding": 8020.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Biplab Kumar Shaw", "Outstanding": 2956.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Biswajeet Electrics(nordusk)", "Outstanding": 2062.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Biswajeet Electric (Uncle)", "Outstanding": 250.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "B. R. TELESERVICES & B.R. WEIGH BRIDGE", "Outstanding": 0.0, "Party Category": "wholesaler", "Product Category": "Listure"}, {"Customer Name": "B T AGENCY", "Outstanding": 15994.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Das Electric (Kankinara)", "Outstanding": 14469.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "DAS ELECTRICS (ICH)", "Outstanding": 14353.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Debnath Electric ( Ichapore)", "Outstanding": 6027.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Debnath Electrics ( NB)", "Outstanding": 10740.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Dey Electric", "Outstanding": 150.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Dinesh Electrics (Dada)", "Outstanding": 3000.0, "Party Category": "wholesaler", "Product Category": "Listure"}, {"Customer Name": "DREAM ELECTRIC", "Outstanding": 2390.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Guha Electric", "Outstanding": 60680.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "Gupta Electric", "Outstanding": 3900.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Joy Guru Electric<Duttapara>", "Outstanding": 2980.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Karuna Greentech Pvt Ltd", "Outstanding": 0.0, "Party Category": "Supplier", "Product Category": "Nordusk"}, {"Customer Name": "Keshari", "Outstanding": 11415.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "KLIVIYA ENTERPRISE", "Outstanding": 186580.06, "Party Category": "wholesaler", "Product Category": "Listure"}, {"Customer Name": "Kumar Electric", "Outstanding": 35194.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Ladhuram Toshniwal & Sons", "Outstanding": 0.0, "Party Category": "Supplier", "Product Category": "Rashmi"}, {"Customer Name": "Lakshmi Electricals & Electronics", "Outstanding": 24595.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Led Shop", "Outstanding": 9140.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "LOKENATH ENTERPRISE", "Outstanding": 36892.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Loknath Electronics(SHY)", "Outstanding": 3850.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Maa Durga Electric", "Outstanding": 14772.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Maa Enterprise", "Outstanding": 0.0, "Party Category": "Retailer", "Product Category": "Unclassified"}, {"Customer Name": "Maa kali Electric", "Outstanding": 859.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Maa Mansha", "Outstanding": 3528.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "MAA TARA ELECTRIC(NORDUSK)", "Outstanding": 10675.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "MAA TARA Electrics(LISTER)", "Outstanding": 19224.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Mahamaya Electrics", "Outstanding": 39098.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Mahanta Electric", "Outstanding": 1409.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Majumdar Electric", "Outstanding": 3516.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Majumdar (Panpur)", "Outstanding": 165.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Malati", "Outstanding": 120.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Manoku & Joyti Electronics", "Outstanding": 10000.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Maruti Electric", "Outstanding": 7377.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Maya Electrics", "Outstanding": 16850.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Mehir Electric", "Outstanding": 1047.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Mohanto Electrics", "Outstanding": 16580.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Mondal Electric", "Outstanding": 1881.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Moni Electric", "Outstanding": 4990.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Monu Electrics", "Outstanding": 11514.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "M/S GANAPATI CONSULTANTS", "Outstanding": 5450.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "M/S. MALLIK ELECTRIC", "Outstanding": 631264.8, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "M/S. MALLIK ELECTRIC (NB)", "Outstanding": 5100.0, "Party Category": "wholesaler", "Product Category": "Listure"}, {"Customer Name": "M/S THE RAINBOW ELECTRONICS", "Outstanding": 11375.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "M/S THE TAPAN ELECTRIC(NH)", "Outstanding": 10011.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Naihati Electric", "Outstanding": 15470.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Neha Electric ltd", "Outstanding": 21739.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "New Dey Electrics", "Outstanding": 4495.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "New Garai Elect", "Outstanding": 40409.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "New Lakshmi Electrical &  Electronics", "Outstanding": 8488.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "New Om Electricals", "Outstanding": 10760.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "New Prashad Electrics", "Outstanding": 10545.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Nupur Electrics", "Outstanding": 10615.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Om Electrical", "Outstanding": 42203.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Om sai Electrics", "Outstanding": 900.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "PAUL ELECTRIC(Listure)", "Outstanding": 35970.0, "Party Category": "wholesaler", "Product Category": "Listure"}, {"Customer Name": "Paul Electric(NH)", "Outstanding": 57920.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "PAUL ELECTRIC(NORRDUSK)", "Outstanding": 36636.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "P.G.Electrric and Electronics", "Outstanding": 33950.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Prakash light house", "Outstanding": 3186.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Quantswift Private Limited", "Outstanding": 0.0, "Party Category": "Supplier", "Product Category": "khaitan"}, {"Customer Name": "Ramkrishna Electric (BS)", "Outstanding": 9045.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Rinku & Stores", "Outstanding": 13957.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Roy Electric", "Outstanding": 1283.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Sahara  Electric", "Outstanding": 7271.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Sakshi Electrics", "Outstanding": 1924.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Sambhu Electrics", "Outstanding": 0.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "Sarkar Electriccs", "Outstanding": 13795.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "shaan Electric", "Outstanding": 7799.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Sharma Electrics", "Outstanding": 3050.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Shaw Electric", "Outstanding": 38572.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "SHAW & SONS", "Outstanding": 5350.0, "Party Category": "wholesaler", "Product Category": "Nordusk"}, {"Customer Name": "Shila Electrics", "Outstanding": 30462.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Shyam Repairing", "Outstanding": 4441.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Soma Electric", "Outstanding": 4218.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Sree Guru Electrics", "Outstanding": 191150.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "S.R Electrics", "Outstanding": 37324.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Sri Ganesh Electronics", "Outstanding": 23506.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "S.Sharma Electrics", "Outstanding": 5865.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Stichwel Sewing Machine Reparing Center", "Outstanding": 18615.0, "Party Category": "wholesaler", "Product Category": "Listure"}, {"Customer Name": "SUHANI ELECTRICALS", "Outstanding": 42193.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Suku Electric", "Outstanding": 2000.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Sunny Electric", "Outstanding": 1700.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Swarndeep Electric", "Outstanding": 6126.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Tapan Electrics ( SHYAMNAGAR)", "Outstanding": 5128.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "Tara maa Electric", "Outstanding": 750.0, "Party Category": "Retailer", "Product Category": "Nordusk"}, {"Customer Name": "THIKTHAK", "Outstanding": 34068.0, "Party Category": "wholesaler", "Product Category": "Listure"}, {"Customer Name": "Tina Electronics", "Outstanding": 3920.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "Ujwal Electrics & Home Appliances", "Outstanding": 46695.0, "Party Category": "Retailer", "Product Category": "Listure"}, {"Customer Name": "U.T.DEVELOPERS", "Outstanding": 27356.0, "Party Category": "Retailer", "Product Category": "Listure"}];
+
+const fmtINR = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const fmtINRL = n => { // lakh-formatted
+  const v = n/100000;
+  return '₹' + v.toFixed(2) + 'L';
+};
+const fmtNum = n => Math.round(n).toLocaleString('en-IN');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const seriesColors = ['#b8860b','#0e8a73','#8a2fb8','#c2431f','#1f5fad'];
+const inkColor   = '#241c0e';
+const ink2Color  = '#5a4f38';
+const mutedColor = '#8a7d5f';
+const hairColor  = '#ece5d3';
+const goodColor  = '#0ca30c';
+const critColor  = '#b8302f';
+
+const plotlyFont = { family:"'Manrope', system-ui, sans-serif", color:mutedColor, size:11.5 };
+const plotlyHoverLabel = { bgcolor:'#241c0e', bordercolor:'#241c0e', font:{ family:"'Manrope', system-ui, sans-serif", color:'#fefefc', size:12.5 } };
+const plotlyConfig = { displayModeBar:false, responsive:true };
+function plotlyLayoutBase(extra){
+  return Object.assign({
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font: plotlyFont, hoverlabel: plotlyHoverLabel,
+    margin:{ l:0,r:14,t:8,b:28 }, showlegend:false
+  }, extra);
+}
+
+/* ---------------- TABS ---------------- */
+document.getElementById('tabs').addEventListener('click', e=>{
+  const a = e.target.closest('a'); if(!a) return;
+  document.querySelectorAll('#tabs a').forEach(x=>x.classList.remove('active'));
+  a.classList.add('active');
+  document.querySelectorAll('section.view').forEach(x=>x.classList.remove('active'));
+  const view = document.getElementById(a.dataset.t);
+  view.classList.add('active');
+  view.querySelectorAll('.js-plotly-plot').forEach(el=>Plotly.Plots.resize(el));
+});
+
+function getFilteredStock(){ return stockRows; }
+function getFilteredCust(){ return custRows; }
+
+/* ================= AGGREGATION (computed from raw rows) ================= */
+function groupSum(rows, key, sumKeys){
+  const map = new Map();
+  rows.forEach(r=>{
+    const k = r[key];
+    if(!map.has(k)) map.set(k, Object.assign({ [key]:k, SKUs:0 }, Object.fromEntries(sumKeys.map(s=>[s,0]))));
+    const g = map.get(k);
+    g.SKUs++;
+    sumKeys.forEach(s=>g[s]+=r[s]);
+  });
+  return [...map.values()];
+}
+
+function computeStockAgg(rows){
+  const total_stock_value = rows.reduce((a,r)=>a+r['Stock Value'],0);
+  const total_units = rows.reduce((a,r)=>a+r.Qty,0);
+  const total_skus = rows.length;
+  const dead = rows.filter(r=>r.Qty===0);
+  const dead_pct = total_skus? +(dead.length/total_skus*100).toFixed(1) : 0;
+  const marginable = rows.filter(r=>r.Qty>0 && !isNaN(r.MarginPct));
+  const overall_margin_pct = marginable.length ? marginable.reduce((a,r)=>a+r.MarginPct,0)/marginable.length : 0;
+  const neg = rows.filter(r=>!isNaN(r.MarginPct) && r.MarginPct<0);
+  const by_brand = groupSum(rows,'Brand',['Stock Value','Qty']).sort((a,b)=>b['Stock Value']-a['Stock Value']);
+  const by_cat = groupSum(rows,'Category',['Stock Value','Qty']).sort((a,b)=>b['Stock Value']-a['Stock Value']);
+  const cat_margin = [...new Set(marginable.map(r=>r.Category))].map(cat=>{
+    const rs = marginable.filter(r=>r.Category===cat);
+    return { Category:cat, MarginPct: rs.reduce((a,r)=>a+r.MarginPct,0)/rs.length };
+  });
+  const dead_by_brand = groupSum(dead,'Brand',['Stock Value','Qty']).sort((a,b)=>b.SKUs-a.SKUs);
+  const top_value = [...rows].sort((a,b)=>b['Stock Value']-a['Stock Value']).slice(0,12);
+  const neg_margin = [...neg].sort((a,b)=>a.MarginPct-b.MarginPct).slice(0,10);
+  const topBrandShare = total_stock_value>0 && by_brand.length ?
+    Math.round((by_brand.slice(0,2).reduce((a,r)=>a+r['Stock Value'],0))/total_stock_value*100) : 0;
+  return { total_stock_value, total_units, total_skus, dead_skus:dead.length, dead_pct, overall_margin_pct,
+    neg_margin_count:neg.length, brands:new Set(rows.map(r=>r.Brand)).size, categories:new Set(rows.map(r=>r.Category)).size,
+    by_brand, by_cat, cat_margin, dead_by_brand, top_value, neg_margin, topBrandShare,
+    topBrandNames: by_brand.slice(0,2).map(r=>r.Brand).join(' + ') };
+}
+
+function computeCustAgg(rows){
+  const total_customers = rows.length;
+  const total_outstanding = rows.reduce((a,r)=>a+r.Outstanding,0);
+  const n_with_outstanding = rows.filter(r=>r.Outstanding>0).length;
+  const by_party = groupSum(rows,'Party Category',['Outstanding']).sort((a,b)=>b.Outstanding-a.Outstanding);
+  const by_prodcat = groupSum(rows,'Product Category',['Outstanding']).sort((a,b)=>b.Outstanding-a.Outstanding);
+  const top_debtors = [...rows].sort((a,b)=>b.Outstanding-a.Outstanding).slice(0,15);
+  const top10sum = top_debtors.slice(0,10).reduce((a,r)=>a+r.Outstanding,0);
+  const top10_concentration_pct = total_outstanding>0 ? +(top10sum/total_outstanding*100).toFixed(1) : 0;
+  const wholesaler = by_party.find(r=>r['Party Category']==='wholesaler');
+  const wholesalerSharePct = total_outstanding>0 && wholesaler ? Math.round(wholesaler.Outstanding/total_outstanding*100) : 0;
+  const wholesalerAcctPct = total_customers>0 && wholesaler ? Math.round(wholesaler.SKUs/total_customers*100) : 0;
+  return { total_customers, total_outstanding, n_with_outstanding, by_party, by_prodcat, top_debtors,
+    top10_concentration_pct, wholesalerSharePct, wholesalerAcctPct,
+    product_categories:new Set(rows.map(r=>r['Product Category'])).size };
+}
+
+/* ================= RENDER ================= */
+function kpi(lbl,val,delta,cls,flag){
+  return `<div class="kpi ${flag?'flag':''}">
+    <div class="lbl">${lbl}</div>
+    <div class="val tabular">${val}</div>
+    <div class="delta ${cls}">${delta}</div>
+  </div>`;
+}
+function safeMax(arr, fn){ return arr.length ? Math.max(...arr.map(fn)) : 1; }
+function emptyRow(cols){ return `<tr><td colspan="${cols}" style="text-align:center;color:var(--ink-muted);padding:22px 10px;">No rows match the current filters</td></tr>`; }
+
+function renderAll(){
+  const stock = computeStockAgg(getFilteredStock());
+  const cust = computeCustAgg(getFilteredCust());
+
+  /* ---- KPI tiles ---- */
+  document.getElementById('kpi-overview').innerHTML = [
+    kpi('Total Stock Value', fmtINRL(stock.total_stock_value), stock.total_skus+' SKUs · '+stock.brands+' brands','neutral'),
+    kpi('Total Outstanding', fmtINRL(cust.total_outstanding), cust.total_customers+' customer accounts','neutral'),
+    kpi('Dead Stock', stock.dead_pct+'%', stock.dead_skus+' SKUs at zero qty','warn',stock.dead_skus>0),
+    kpi('Blended Margin', stock.overall_margin_pct.toFixed(1)+'%', 'on priced, in-stock SKUs', stock.overall_margin_pct>=0?'good':'warn'),
+    kpi('Below-Cost SKUs', stock.neg_margin_count, 'losing money on every sale','warn',stock.neg_margin_count>0),
+    kpi('Top-10 Debtor Share', cust.top10_concentration_pct+'%', 'of all receivables','warn',cust.top10_concentration_pct>50),
+  ].join('');
+
+  document.getElementById('kpi-inventory').innerHTML = [
+    kpi('Stock Value', fmtINRL(stock.total_stock_value), fmtNum(stock.total_units)+' units on hand','neutral'),
+    kpi('Active SKUs', stock.total_skus, stock.brands+' brands · '+stock.categories+' categories','neutral'),
+    kpi('Dead Stock', stock.dead_skus+' SKUs', stock.dead_pct+'% of catalog · zero qty','warn',stock.dead_skus>0),
+    kpi('Below-Cost Pricing', stock.neg_margin_count+' SKUs', 'selling under purchase price','warn',stock.neg_margin_count>0),
+    kpi('Blended Margin', stock.overall_margin_pct.toFixed(1)+'%', 'across priced, in-stock SKUs', stock.overall_margin_pct>=0?'good':'warn'),
+    kpi('Top Brand Share', stock.topBrandShare+'%', 'of value in '+(stock.topBrandNames||'—'),'neutral'),
+  ].join('');
+
+  document.getElementById('kpi-customers').innerHTML = [
+    kpi('Total Accounts', cust.total_customers, cust.n_with_outstanding+' carry a balance','neutral'),
+    kpi('Total Outstanding', fmtINRL(cust.total_outstanding), 'across all accounts','neutral'),
+    kpi('Top-10 Concentration', cust.top10_concentration_pct+'%', 'of receivables in top 10 accounts','warn',cust.top10_concentration_pct>50),
+    kpi('Wholesaler Share', cust.wholesalerSharePct+'%', 'of debt from '+cust.wholesalerAcctPct+'% of accounts','warn',cust.wholesalerSharePct>cust.wholesalerAcctPct),
+    kpi('Largest Single Debtor', cust.top_debtors.length?fmtINRL(cust.top_debtors[0].Outstanding):'—', cust.top_debtors.length?cust.top_debtors[0]['Customer Name']:'no data','warn',cust.top_debtors.length>0),
+    kpi('Supplied Brands', cust.product_categories, 'active product lines','neutral'),
+  ].join('');
+
+  /* ---- Inventory: brand bars ---- */
+  (function(){
+    const rows = [...stock.by_brand].sort((a,b)=>a['Stock Value']-b['Stock Value']);
+    Plotly.newPlot('bars-brand', rows.length?[{
+      type:'bar', orientation:'h',
+      x: rows.map(r=>r['Stock Value']), y: rows.map(r=>r.Brand),
+      marker:{ color: rows.map((r,i)=>seriesColors[i%5]) },
+      customdata: rows.map(r=>r.SKUs),
+      hovertemplate: '<b>%{y}</b><br>₹%{x:,.0f} stock value · %{customdata} SKUs<extra></extra>',
+      width: 0.62
+    }]:[], plotlyLayoutBase({
+      margin:{ l:70,r:60,t:8,b:30 },
+      xaxis:{ gridcolor:hairColor, zeroline:false, tickprefix:'₹', tickformat:',.0f', tickfont:plotlyFont },
+      yaxis:{ automargin:true, tickfont:{ family:plotlyFont.family, color:ink2Color, size:12.5 } }
+    }), plotlyConfig);
+  })();
+
+  /* ---- Inventory: margin by category ---- */
+  (function(){
+    const rows = stock.cat_margin;
+    Plotly.newPlot('bars-margin', rows.length?[{
+      type:'bar', orientation:'h',
+      x: rows.map(r=>r.MarginPct), y: rows.map(r=>r.Category),
+      marker:{ color: rows.map(r=>r.MarginPct>=0?goodColor:critColor) },
+      hovertemplate: '<b>%{y}</b><br>%{x:.1f}% avg margin<extra></extra>',
+      width: 0.55
+    }]:[], plotlyLayoutBase({
+      margin:{ l:70,r:30,t:8,b:30 },
+      xaxis:{ gridcolor:hairColor, zeroline:true, zerolinecolor:'#c3c2b7', ticksuffix:'%', tickfont:plotlyFont },
+      yaxis:{ automargin:true, tickfont:{ family:plotlyFont.family, color:ink2Color, size:12.5 } }
+    }), plotlyConfig);
+  })();
+
+  /* ---- Inventory: dead stock by brand ---- */
+  (function(){
+    const rows = [...stock.dead_by_brand].sort((a,b)=>a.SKUs-b.SKUs);
+    Plotly.newPlot('bars-dead', rows.length?[{
+      type:'bar', orientation:'h',
+      x: rows.map(r=>r.SKUs), y: rows.map(r=>r.Brand),
+      marker:{ color: critColor },
+      hovertemplate: '<b>%{y}</b><br>%{x} zero-stock SKUs<extra></extra>',
+      width: 0.55
+    }]:[], plotlyLayoutBase({
+      margin:{ l:70,r:30,t:8,b:30 },
+      xaxis:{ gridcolor:hairColor, zeroline:false, tickformat:',.0f', tickfont:plotlyFont },
+      yaxis:{ automargin:true, tickfont:{ family:plotlyFont.family, color:ink2Color, size:12.5 } }
+    }), plotlyConfig);
+  })();
+
+  /* ---- Inventory: negative margin table ---- */
+  document.getElementById('tbl-negmargin').innerHTML = stock.neg_margin.length ? stock.neg_margin.map(r=>`
+    <tr>
+      <td class="name-cell">${esc(r.Name)}</td>
+      <td>${esc(r.Brand)}</td>
+      <td class="num" style="color:var(--critical)">${r.MarginPct.toFixed(1)}%</td>
+    </tr>`).join('') : emptyRow(3);
+
+  /* ---- Inventory: top value table ---- */
+  (function(){
+    const rows = stock.top_value;
+    const max = safeMax(rows, r=>r['Stock Value']);
+    document.getElementById('tbl-topvalue').innerHTML = rows.length ? rows.map(r=>`
+      <tr>
+        <td class="name-cell">${esc(r.Name)}</td>
+        <td>${esc(r.Category)}</td>
+        <td>${esc(r.Brand)}</td>
+        <td class="num tabular">${fmtNum(r.Qty)}</td>
+        <td class="num tabular"><span class="mini-bar" style="width:${Math.max(4,r['Stock Value']/max*60)}px"></span>${fmtINR(r['Stock Value'])}</td>
+      </tr>`).join('') : emptyRow(5);
+  })();
+
+  /* ---- Customers: party & prodcat vertical bars ---- */
+  function vbarChart(divId, rows, nameKey, valKey, countKey){
+    Plotly.newPlot(divId, rows.length?[{
+      type:'bar',
+      x: rows.map(r=>r[nameKey]), y: rows.map(r=>r[valKey]),
+      marker:{ color: rows.map((r,i)=>seriesColors[i%5]) },
+      customdata: rows.map(r=>r[countKey]),
+      hovertemplate: '<b>%{x}</b><br>₹%{y:,.0f} outstanding · %{customdata} accounts<extra></extra>',
+      width: 0.55
+    }]:[], plotlyLayoutBase({
+      margin:{ l:60,r:14,t:8,b:36 },
+      xaxis:{ tickfont:{ family:plotlyFont.family, color:ink2Color, size:12.5, weight:700 } },
+      yaxis:{ gridcolor:hairColor, zeroline:false, tickprefix:'₹', tickformat:',.0f', tickfont:plotlyFont }
+    }), plotlyConfig);
+  }
+  vbarChart('bars-party', cust.by_party, 'Party Category','Outstanding','SKUs');
+  vbarChart('bars-prodcat', cust.by_prodcat.filter(r=>r.Outstanding>0), 'Product Category','Outstanding','SKUs');
+
+  /* ---- Customers: debtors table ---- */
+  (function(){
+    const rows = cust.top_debtors;
+    const max = safeMax(rows, r=>r.Outstanding);
+    document.getElementById('tbl-debtors').innerHTML = rows.length ? rows.map(r=>`
+      <tr>
+        <td class="name-cell">${esc(r['Customer Name'])}</td>
+        <td><span class="pill gold">${esc(r['Party Category'])}</span></td>
+        <td>${esc(r['Product Category'])}</td>
+        <td class="num tabular"><span class="mini-bar" style="width:${Math.max(4,r.Outstanding/max*60)}px"></span>${fmtINR(r.Outstanding)}</td>
+      </tr>`).join('') : emptyRow(4);
+  })();
+
+  /* ---- Donuts ---- */
+  function donutChart(divId, legendEl, rows, nameKey, valKey){
+    const total = rows.reduce((a,r)=>a+r[valKey],0);
+    Plotly.newPlot(divId, rows.length?[{
+      type:'pie', hole:0.62,
+      labels: rows.map(r=>r[nameKey]), values: rows.map(r=>r[valKey]),
+      marker:{ colors: rows.map((r,i)=>seriesColors[i%5]), line:{ color:'#ffffff', width:2 } },
+      textinfo:'none', hovertemplate:'<b>%{label}</b><br>₹%{value:,.0f} (%{percent})<extra></extra>',
+      sort:false
+    }]:[], plotlyLayoutBase({ margin:{ l:0,r:0,t:0,b:0 } }), plotlyConfig);
+    legendEl.innerHTML = rows.length ? rows.map((row,i)=>`
+      <div class="row">
+        <div class="sw" style="background:${seriesColors[i%5]}"></div>
+        <div class="name">${esc(row[nameKey])}</div>
+        <div class="pct tabular">${total>0?(row[valKey]/total*100).toFixed(0):0}%</div>
+      </div>`).join('') : '<div class="row"><div class="name">No data for this filter</div></div>';
+  }
+  donutChart('donut-cat', document.getElementById('legend-cat'),
+    stock.by_cat.filter(r=>r['Stock Value']>0), 'Category','Stock Value');
+  donutChart('donut-party', document.getElementById('legend-party'),
+    cust.by_party, 'Party Category','Outstanding');
+
+  document.querySelectorAll('section.view.active .js-plotly-plot').forEach(el=>Plotly.Plots.resize(el));
+}
+renderAll();
+
+/* ---------------- INSIGHT CARDS ---------------- */
+const insights = [
+  {tag:'Pricing leak · High priority', cls:'risk', h:'13 SKUs are priced below purchase cost',
+   p:'Items like "AD 101 3W RD Slim Panel" (−970% margin) and several Nordusk bulbs are listed to sell for less than they cost to buy. Every unit sold on these SKUs burns cash rather than making it.',
+   act:'Action → Audit and correct pricing on all 13 flagged SKUs this week.'},
+  {tag:'Working capital · High priority', cls:'risk', h:'21.8% of the catalog (63 SKUs) is dead stock',
+   p:'Nordusk alone accounts for 39 of the 63 zero-quantity SKUs. Some are fast movers awaiting reorder — but a portion is likely obsolete and quietly tying up shelf space and reporting noise.',
+   act:'Action → Reconcile the 63-SKU list into "reorder" vs. "discontinue" within 2 weeks.'},
+  {tag:'Credit risk · High priority', cls:'risk', h:'Top 10 debtors hold 61.7% of all receivables',
+   p:'M/S. Mallik Electric alone owes ₹6.3L — 24.5% of total outstanding. A single delayed or defaulted payment from the top 2–3 accounts would materially strain cash flow.',
+   act:'Action → Set formal credit limits and review cycles for the top 15 accounts.'},
+  {tag:'Segment strategy · Watch', cls:'watch', h:'Wholesalers: 15% of accounts, 55% of exposure',
+   p:'Wholesaler accounts (16 of 107) carry ₹14.1L of the ₹25.7L outstanding — nearly 3x their share of the customer base. This is normal for wholesale credit terms, but it concentrates risk in a small group.',
+   act:'Action → Consider shorter payment cycles or partial-advance terms for top wholesalers.'},
+  {tag:'Portfolio concentration', cls:'', h:'92% of stock value sits in 2 of 5 brands',
+   p:'Listure (₹7.6L) and Nordusk (₹4.3L) dominate the warehouse; Khaitan, Rashmi and unlabeled stock are marginal. The business is effectively a two-brand distributor today.',
+   act:'Action → Evaluate whether Khaitan/Rashmi are worth active stocking or should be phased out.'},
+  {tag:'Data foundation', cls:'watch', h:'Sales, purchase and expense logs are empty',
+   p:'With zero transaction rows recorded, there is no visibility yet into sales velocity, stock turnover days, supplier payment terms, or true profit & loss — only static snapshots of stock and receivables.',
+   act:'Action → Start logging every sale, purchase and expense to unlock trend analytics.'},
+];
+document.getElementById('insight-cards').innerHTML = insights.map(c=>`
+  <div class="insight ${c.cls}">
+    <div class="itag">${c.tag}</div>
+    <h4>${c.h}</h4>
+    <p>${c.p}</p>
+    <div class="act">${c.act}</div>
+  </div>`).join('');
+
+/* ================= EXCEL CONVERTER (Purchase & Sales) ================= */
+const AMOUNT_KEYS = ['Total Amount','Amount','Total','Grand Total','Net Amount'];
+const QTY_KEYS = ['Quantity','Qty'];
+const RATE_KEYS = ['Rate (Per Unit)','Rate','Price'];
+
+function convFindKey(row, candidates){
+  const keys = Object.keys(row);
+  for(const c of candidates){
+    const hit = keys.find(k=>k.trim().toLowerCase()===c.toLowerCase());
+    if(hit) return hit;
+  }
+  return null;
+}
+
+function convSetupSection(kind, fileInputId, dropzoneEl, summaryId, previewId, actionsId){
+  const state = { rows:[], headers:[], fileName:'' };
+  const summaryEl = document.getElementById(summaryId);
+  const previewEl = document.getElementById(previewId);
+  const actionsEl = document.getElementById(actionsId);
+  const fileInput = document.getElementById(fileInputId);
+
+  function renderEmpty(){
+    summaryEl.innerHTML = '';
+    previewEl.innerHTML = `<div class="empty-hint">No file loaded yet — choose a ${kind} workbook above to preview it here.</div>`;
+    actionsEl.innerHTML = '';
+  }
+
+  function renderLoaded(){
+    const rows = state.rows, headers = state.headers;
+    const amountKey = headers.length ? convFindKey(rows[0]||{}, AMOUNT_KEYS) : null;
+    const qtyKey = headers.length ? convFindKey(rows[0]||{}, QTY_KEYS) : null;
+    const rateKey = headers.length ? convFindKey(rows[0]||{}, RATE_KEYS) : null;
+
+    let totalAmount = 0;
+    if(amountKey){
+      totalAmount = rows.reduce((a,r)=>a + (parseFloat(r[amountKey])||0), 0);
+    } else if(qtyKey && rateKey){
+      totalAmount = rows.reduce((a,r)=>a + (parseFloat(r[qtyKey])||0)*(parseFloat(r[rateKey])||0), 0);
+    }
+    const totalQty = qtyKey ? rows.reduce((a,r)=>a+(parseFloat(r[qtyKey])||0),0) : null;
+
+    summaryEl.innerHTML = [
+      `<div class="stat"><div class="k">File</div><div class="v" style="font-size:13px;">${esc(state.fileName)}</div></div>`,
+      `<div class="stat"><div class="k">Rows</div><div class="v tabular">${fmtNum(rows.length)}</div></div>`,
+      amountKey||(qtyKey&&rateKey) ? `<div class="stat"><div class="k">Total value</div><div class="v tabular">${fmtINR(totalAmount)}</div></div>` : '',
+      totalQty!==null ? `<div class="stat"><div class="k">Total qty</div><div class="v tabular">${fmtNum(totalQty)}</div></div>` : '',
+    ].join('');
+
+    if(!rows.length){
+      previewEl.innerHTML = `<div class="empty-hint">The sheet was read but contains no data rows.</div>`;
+    } else {
+      const shown = rows.slice(0,200);
+      previewEl.innerHTML = `<table>
+        <thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
+        <tbody>${shown.map(r=>`<tr>${headers.map(h=>`<td>${esc(r[h]===undefined||r[h]===null?'':r[h])}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>${rows.length>200?`<div class="empty-hint">Showing first 200 of ${fmtNum(rows.length)} rows</div>`:''}`;
+    }
+
+    actionsEl.innerHTML = `
+      <button class="conv-btn" id="${kind}-dl-xlsx">Download Excel (.xlsx)</button>
+      <button class="conv-btn ghost" id="${kind}-copy-json">Copy as JSON</button>
+      <button class="conv-btn ghost" id="${kind}-clear">Clear</button>`;
+
+    document.getElementById(`${kind}-dl-xlsx`).addEventListener('click', async ()=>{
+      const btn = document.getElementById(`${kind}-dl-xlsx`);
+      const orig = btn.textContent;
+      const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, kind==='purchase' ? 'Purchase' : 'Sales');
+      const buf = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+      const filename = kind + '_register.xlsx';
+
+      let savedViaCapability = false;
+      try{
+        if(window.claude && window.claude.use){
+          const downloads = await window.claude.use('downloads');
+          if(downloads){
+            await downloads.save({ filename, data: buf });
+            savedViaCapability = true;
+          }
+        }
+      }catch(err){ /* .xlsx isn't in the platform download allowlist inside the artifact sandbox — fall back below */ }
+
+      if(savedViaCapability){
+        btn.textContent = 'Saved!'; setTimeout(()=>btn.textContent=orig,1400);
+        return;
+      }
+      try{
+        const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        btn.textContent = 'Downloaded'; setTimeout(()=>btn.textContent=orig,1400);
+      }catch(e){
+        btn.textContent = 'Save failed — open this file outside the artifact preview'; setTimeout(()=>btn.textContent=orig,2600);
+      }
+    });
+    document.getElementById(`${kind}-copy-json`).addEventListener('click', async ()=>{
+      const btn = document.getElementById(`${kind}-copy-json`);
+      try{
+        await navigator.clipboard.writeText(JSON.stringify(rows, null, 2));
+        const orig = btn.textContent; btn.textContent = 'Copied!';
+        setTimeout(()=>btn.textContent = orig, 1400);
+      }catch(e){ btn.textContent = 'Copy failed'; }
+    });
+    document.getElementById(`${kind}-clear`).addEventListener('click', ()=>{
+      state.rows = []; state.headers = []; state.fileName = '';
+      fileInput.value = '';
+      renderEmpty();
+    });
+  }
+
+  function handleFile(file){
+    if(!file) return;
+    state.fileName = file.name;
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      try{
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type:'array' });
+        const sheetName = wb.SheetNames[0];
+        const sheet = wb.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval:'' });
+        const headers = rows.length ? Object.keys(rows[0]) : (XLSX.utils.sheet_to_json(sheet, { header:1 })[0] || []);
+        state.rows = rows; state.headers = headers;
+        renderLoaded();
+      }catch(err){
+        previewEl.innerHTML = `<div class="empty-hint">Could not read this file — make sure it's a valid .xlsx, .xls or .csv. (${esc(err.message||err)})</div>`;
+        summaryEl.innerHTML = ''; actionsEl.innerHTML = '';
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  fileInput.addEventListener('change', e=>handleFile(e.target.files[0]));
+  ['dragenter','dragover'].forEach(evt=>dropzoneEl.addEventListener(evt, e=>{ e.preventDefault(); dropzoneEl.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(evt=>dropzoneEl.addEventListener(evt, e=>{ e.preventDefault(); dropzoneEl.classList.remove('drag'); }));
+  dropzoneEl.addEventListener('drop', e=>{ const f = e.dataTransfer.files[0]; if(f) handleFile(f); });
+
+  renderEmpty();
+
+  return {
+    setRows(rows, headers, fileName){
+      state.rows = rows; state.headers = headers; state.fileName = fileName;
+      renderLoaded();
+    }
+  };
+}
+
+const purchaseSection = convSetupSection('purchase', 'file-purchase', document.querySelector('#conv-purchase .dropzone'), 'sum-purchase', 'prev-purchase', 'act-purchase');
+convSetupSection('sales', 'file-sales', document.querySelector('#conv-sales .dropzone'), 'sum-sales', 'prev-sales', 'act-sales');
+
+/* ================= AI BILL EXTRACTOR (Gemini) ================= */
+(function(){
+  const PURCHASE_HEADERS = ['Purchaser Invoice No','JG Invoice No','Supplier Name','Product Category','Item Name','HSN Code','Quantity','Rate (Per Unit)','CGST','SGST','Total Amount'];
+  const keyInput = document.getElementById('pdfx-apikey');
+  const rememberBox = document.getElementById('pdfx-remember');
+  const fileInput = document.getElementById('pdfx-file');
+  const dropzoneEl = document.querySelector('#conv-pdf-extractor .dropzone');
+  const statusEl = document.getElementById('pdfx-status');
+  const previewEl = document.getElementById('pdfx-preview');
+
+  const savedKey = localStorage.getItem('jg_gemini_api_key');
+  if(savedKey){ keyInput.value = savedKey; rememberBox.checked = true; }
+  rememberBox.addEventListener('change', ()=>{
+    if(!rememberBox.checked) localStorage.removeItem('jg_gemini_api_key');
+    else if(keyInput.value.trim()) localStorage.setItem('jg_gemini_api_key', keyInput.value.trim());
+  });
+  keyInput.addEventListener('input', ()=>{
+    if(rememberBox.checked) localStorage.setItem('jg_gemini_api_key', keyInput.value.trim());
+  });
+
+  function setStatus(html, cls){
+    statusEl.className = 'pdfx-status' + (cls?(' '+cls):'');
+    statusEl.innerHTML = html;
+  }
+
+  function fileToBase64(file){
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=>resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function extractWithGemini(file){
+    const apiKey = keyInput.value.trim();
+    if(!apiKey){ setStatus('Enter your Gemini API key first.', 'err'); return; }
+
+    setStatus('<span class="spin"></span>Reading PDF…');
+    let base64;
+    try{ base64 = await fileToBase64(file); }
+    catch(e){ setStatus('Could not read the PDF file.', 'err'); return; }
+
+    const prompt = `You are extracting a purchase bill into a strict schema. Read the attached PDF invoice/bill and return ONLY a JSON array (no markdown fences, no commentary) of line-item objects. Each object must have exactly these keys, in this order: "Purchaser Invoice No", "JG Invoice No", "Supplier Name", "Product Category", "Item Name", "HSN Code", "Quantity", "Rate (Per Unit)", "CGST", "SGST", "Total Amount".
+Rules:
+- One object per line item on the bill.
+- "Purchaser Invoice No" and "Supplier Name" are invoice-level fields — repeat the same value on every line item row from that bill.
+- "JG Invoice No" is an internal reference; if the bill does not state one, leave it as an empty string "".
+- "Quantity", "Rate (Per Unit)", "CGST", "SGST" and "Total Amount" must be plain numbers (no currency symbols, no commas, no % signs) — use 0 if a value is genuinely absent.
+- "HSN Code" and "Product Category" should be taken verbatim from the bill if present, else best inferred from the item description; use "" if truly unknowable.
+- Do not invent line items that are not on the bill.
+Return ONLY the JSON array.`;
+
+    setStatus('<span class="spin"></span>Extracting fields with Gemini…');
+    let res, data;
+    try{
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          contents:[{ parts:[
+            { text: prompt },
+            { inline_data:{ mime_type:'application/pdf', data: base64 } }
+          ]}],
+          generationConfig:{ temperature:0, responseMimeType:'application/json' }
+        })
+      });
+    }catch(networkErr){
+      setStatus('Network request to Gemini was blocked. This preview is likely running inside the claude.ai artifact sandbox, which does not allow calls to external APIs — open this HTML file directly in a browser (or host it yourself) to use the extractor.', 'err');
+      return;
+    }
+
+    try{ data = await res.json(); }
+    catch(e){ setStatus('Gemini returned a response that could not be parsed.', 'err'); return; }
+
+    if(!res.ok){
+      const msg = (data && data.error && data.error.message) || `HTTP ${res.status}`;
+      setStatus('Gemini API error: ' + esc(msg), 'err');
+      return;
+    }
+
+    let text = '';
+    try{ text = data.candidates[0].content.parts.map(p=>p.text||'').join(''); }
+    catch(e){ setStatus('Unexpected response shape from Gemini.', 'err'); return; }
+
+    text = text.trim().replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
+    let rows;
+    try{ rows = JSON.parse(text); }
+    catch(e){ setStatus('Could not parse Gemini\'s output as JSON. Try again, or use a clearer scan of the bill.', 'err'); return; }
+    if(!Array.isArray(rows) || !rows.length){ setStatus('Gemini did not find any line items on this bill.', 'err'); return; }
+
+    rows = rows.map(r=>{
+      const out = {};
+      PURCHASE_HEADERS.forEach(h=>{ out[h] = r[h] !== undefined ? r[h] : ''; });
+      return out;
+    });
+
+    previewEl.style.display = '';
+    previewEl.innerHTML = `<table>
+      <thead><tr>${PURCHASE_HEADERS.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r=>`<tr>${PURCHASE_HEADERS.map(h=>`<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>`;
+    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'} — loaded into the Purchase register below. Scroll down to export.`, 'ok');
+
+    if(purchaseSection) purchaseSection.setRows(rows, PURCHASE_HEADERS, file.name.replace(/\.pdf$/i,'') + ' (Gemini extract)');
+  }
+
+  fileInput.addEventListener('change', e=>{ const f = e.target.files[0]; if(f) extractWithGemini(f); });
+  ['dragenter','dragover'].forEach(evt=>dropzoneEl.addEventListener(evt, e=>{ e.preventDefault(); dropzoneEl.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(evt=>dropzoneEl.addEventListener(evt, e=>{ e.preventDefault(); dropzoneEl.classList.remove('drag'); }));
+  dropzoneEl.addEventListener('drop', e=>{ const f = e.dataTransfer.files[0]; if(f) extractWithGemini(f); });
+})();
+</script>
