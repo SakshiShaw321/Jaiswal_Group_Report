@@ -1,0 +1,4 @@
+.env
+config.js
+__pycache__/
+*.pyc
