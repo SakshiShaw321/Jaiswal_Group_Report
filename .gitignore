@@ -2,3 +2,5 @@
 config.js
 __pycache__/
 *.pyc
+.netlify/
+node_modules/
