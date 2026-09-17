@@ -2,11 +2,7 @@
 Jaiswal Group business dashboard — production server.
 
 Serves dashboard.html, the data/ workbooks, and the AI bill-extraction APIs
-(purchase + sales) behind a single Flask app protected by HTTP Basic Auth.
-
-Internal-network use only: Basic Auth sends credentials on every request, so
-this must run on a trusted LAN/VPN, or behind a TLS-terminating reverse proxy
-if it is ever reached from outside your office network. See PRODUCTION.md.
+(purchase + sales) behind a single Flask app.
 
 Usage:
     pip install -r requirements.txt
@@ -15,14 +11,13 @@ Usage:
 """
 
 import base64
-import hmac
 import io
 import json
 import os
 import re
 
 from dotenv import load_dotenv
-from flask import Flask, Response, jsonify, request, send_file, send_from_directory
+from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 import openpyxl
 import requests
@@ -34,9 +29,6 @@ GEMINI_MODEL = "gemini-3.6-flash"
 GEMINI_URL = (
     f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 )
-
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -111,36 +103,6 @@ Return ONLY the JSON array."""
 
 app = Flask(__name__, static_folder=None)
 CORS(app)
-
-
-# ---------------------------------------------------------------- auth ----
-
-def _unauthorized():
-    return Response(
-        "Authentication required.",
-        401,
-        {"WWW-Authenticate": 'Basic realm="Jaiswal Group Dashboard"'},
-    )
-
-
-@app.before_request
-def require_basic_auth():
-    if not ADMIN_USERNAME or not ADMIN_PASSWORD:
-        # Fail closed: refuse to serve anything if auth isn't configured,
-        # rather than silently running the dashboard open to anyone.
-        return Response(
-            "Server misconfigured: ADMIN_USERNAME / ADMIN_PASSWORD not set in .env.",
-            500,
-        )
-
-    auth = request.authorization
-    if auth is None:
-        return _unauthorized()
-
-    user_ok = hmac.compare_digest(auth.username or "", ADMIN_USERNAME)
-    pass_ok = hmac.compare_digest(auth.password or "", ADMIN_PASSWORD)
-    if not (user_ok and pass_ok):
-        return _unauthorized()
 
 
 # ------------------------------------------------------- static / data ----
