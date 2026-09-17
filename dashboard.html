@@ -729,7 +729,7 @@ footer{ text-align:center; padding:40px 0 10px; font-size:11.5px; color:var(--in
 
   <div class="card conv-card" id="conv-pdf-extractor" style="margin-bottom:18px;">
     <h3>AI Purchase Bill Extractor <span class="pill gold" style="margin-left:6px;">Gemini</span></h3>
-    <p class="cap">Upload a purchase bill (PDF) and Gemini extracts these 12 fields per line item: <b>Purchaser Invoice No, JG Invoice No, Purchase Date, Supplier Name, Product Category, Item Name, HSN Code, Quantity, Rate (Per Unit), CGST, SGST, Total Amount</b>. It reads the bill's own labels (e.g. "Original Invoice No.", "Purchase No.", "ITEMS", "HSN", "QTY.", "RATE") and leaves Product Category / CGST / SGST / Total Amount blank when the bill doesn't state them. Extracted rows load straight into the Purchase register below for export.</p>
+    <p class="cap">Upload a purchase bill (PDF) and Gemini extracts these 12 fields per line item: <b>Purchaser Invoice No, JG Invoice No, Purchase Date, Supplier Name, Product Category, Item Name, HSN Code, Quantity, Rate (Per Unit), CGST, SGST, Total Amount</b>. It reads the bill's own labels (e.g. "Original Invoice No.", "Purchase No.", "ITEMS", "HSN", "QTY.", "RATE") and leaves Product Category / CGST / SGST / Total Amount blank when the bill doesn't state them. After extraction you can download the rows as an Excel purchase register.</p>
 
     <label class="dropzone" for="pdfx-file">
       <div class="dz-icon">⇪</div>
@@ -739,12 +739,13 @@ footer{ text-align:center; padding:40px 0 10px; font-size:11.5px; color:var(--in
 
     <div class="pdfx-status" id="pdfx-status"></div>
     <div class="tbl-wrap conv-preview" id="pdfx-preview" style="display:none;"></div>
+    <div class="conv-actions" id="pdfx-actions" style="display:none;"></div>
 
   </div>
 
   <div class="card conv-card" id="conv-sales-pdf-extractor" style="margin-bottom:18px;">
     <h3>AI Sales Bill Extractor <span class="pill gold" style="margin-left:6px;">Gemini</span></h3>
-    <p class="cap">Upload a sales bill (PDF) and Gemini extracts these 10 fields per line item: <b>Invoice No, Customer Name, Product Name, Product Category, HSN Code, Quantity, Rate, CGST, SGST, Total Amount</b>. It reads the bill's own labels (e.g. "Invoice No.", "Bill To", "ITEMS", "HSN", "QTY.", "RATE") and leaves Product Category / CGST / SGST / Total Amount blank when the bill doesn't state them. Extracted rows load straight into the Sales register below for export.</p>
+    <p class="cap">Upload a sales bill (PDF) and Gemini extracts these 10 fields per line item: <b>Invoice No, Customer Name, Product Name, Product Category, HSN Code, Quantity, Rate, CGST, SGST, Total Amount</b>. It reads the bill's own labels (e.g. "Invoice No.", "Bill To", "ITEMS", "HSN", "QTY.", "RATE") and leaves Product Category / CGST / SGST / Total Amount blank when the bill doesn't state them. After extraction you can download the rows as an Excel sales register.</p>
 
     <label class="dropzone" for="pdfx-sales-file">
       <div class="dz-icon">⇪</div>
@@ -754,6 +755,7 @@ footer{ text-align:center; padding:40px 0 10px; font-size:11.5px; color:var(--in
 
     <div class="pdfx-status" id="pdfx-sales-status"></div>
     <div class="tbl-wrap conv-preview" id="pdfx-sales-preview" style="display:none;"></div>
+    <div class="conv-actions" id="pdfx-sales-actions" style="display:none;"></div>
 
   </div>
 </section>
@@ -1541,23 +1543,45 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
   const dropzoneEl = document.querySelector('#conv-pdf-extractor .dropzone');
   const statusEl = document.getElementById('pdfx-status');
   const previewEl = document.getElementById('pdfx-preview');
+  const actionsEl = document.getElementById('pdfx-actions');
+  let lastExtract = { rows: null, fileName: '' };
 
   function setStatus(html, cls){
     statusEl.className = 'pdfx-status' + (cls?(' '+cls):'');
     statusEl.innerHTML = html;
   }
 
-  function fileToBase64(file){
-    return new Promise((resolve,reject)=>{
-      const reader = new FileReader();
-      reader.onload = ()=>resolve(reader.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  function downloadExtractedXlsx(){
+    if(!lastExtract.rows || !lastExtract.rows.length) return;
+    const btn = document.getElementById('pdfx-dl-xlsx');
+    const orig = btn ? btn.textContent : '';
+    const ws = XLSX.utils.json_to_sheet(lastExtract.rows, { header: PURCHASE_HEADERS });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Purchase Register');
+    const buf = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+    const filename = (lastExtract.fileName.replace(/\.pdf$/i,'') || 'purchase_bill') + '_purchase_register.xlsx';
+    const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    if(btn){ btn.textContent = 'Downloaded'; setTimeout(()=>btn.textContent=orig,1400); }
+  }
+
+  function showDownloadActions(){
+    actionsEl.style.display = '';
+    actionsEl.innerHTML = `<button class="conv-btn" id="pdfx-dl-xlsx" type="button">Download Excel (.xlsx)</button>`;
+    document.getElementById('pdfx-dl-xlsx').addEventListener('click', downloadExtractedXlsx);
   }
 
   async function extractWithGemini(file){
     setStatus('<span class="spin"></span>Sending PDF to extraction server…');
+    actionsEl.style.display = 'none';
+    actionsEl.innerHTML = '';
+    previewEl.style.display = 'none';
+    lastExtract = { rows: null, fileName: '' };
+
     const form = new FormData();
     form.append('file', file);
 
@@ -1589,12 +1613,14 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
       return out;
     });
 
+    lastExtract = { rows, fileName: file.name };
     previewEl.style.display = '';
     previewEl.innerHTML = `<table>
       <thead><tr>${PURCHASE_HEADERS.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(r=>`<tr>${PURCHASE_HEADERS.map(h=>`<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</tbody>
     </table>`;
-    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'} — loaded into the Purchase register below. Scroll down to export.`, 'ok');
+    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'}. Download the Excel register below.`, 'ok');
+    showDownloadActions();
 
     if(purchaseSection) purchaseSection.setRows(rows, PURCHASE_HEADERS, file.name.replace(/\.pdf$/i,'') + ' (Gemini extract)');
   }
@@ -1613,14 +1639,45 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
   const dropzoneEl = document.querySelector('#conv-sales-pdf-extractor .dropzone');
   const statusEl = document.getElementById('pdfx-sales-status');
   const previewEl = document.getElementById('pdfx-sales-preview');
+  const actionsEl = document.getElementById('pdfx-sales-actions');
+  let lastExtract = { rows: null, fileName: '' };
 
   function setStatus(html, cls){
     statusEl.className = 'pdfx-status' + (cls?(' '+cls):'');
     statusEl.innerHTML = html;
   }
 
+  function downloadExtractedXlsx(){
+    if(!lastExtract.rows || !lastExtract.rows.length) return;
+    const btn = document.getElementById('pdfx-sales-dl-xlsx');
+    const orig = btn ? btn.textContent : '';
+    const ws = XLSX.utils.json_to_sheet(lastExtract.rows, { header: SALES_HEADERS });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sales Register');
+    const buf = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+    const filename = (lastExtract.fileName.replace(/\.pdf$/i,'') || 'sales_bill') + '_sales_register.xlsx';
+    const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    if(btn){ btn.textContent = 'Downloaded'; setTimeout(()=>btn.textContent=orig,1400); }
+  }
+
+  function showDownloadActions(){
+    actionsEl.style.display = '';
+    actionsEl.innerHTML = `<button class="conv-btn" id="pdfx-sales-dl-xlsx" type="button">Download Excel (.xlsx)</button>`;
+    document.getElementById('pdfx-sales-dl-xlsx').addEventListener('click', downloadExtractedXlsx);
+  }
+
   async function extractSalesWithGemini(file){
     setStatus('<span class="spin"></span>Sending PDF to extraction server…');
+    actionsEl.style.display = 'none';
+    actionsEl.innerHTML = '';
+    previewEl.style.display = 'none';
+    lastExtract = { rows: null, fileName: '' };
+
     const form = new FormData();
     form.append('file', file);
 
@@ -1652,12 +1709,14 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
       return out;
     });
 
+    lastExtract = { rows, fileName: file.name };
     previewEl.style.display = '';
     previewEl.innerHTML = `<table>
       <thead><tr>${SALES_HEADERS.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(r=>`<tr>${SALES_HEADERS.map(h=>`<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</tbody>
     </table>`;
-    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'} — loaded into the Sales register below. Scroll down to export.`, 'ok');
+    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'}. Download the Excel register below.`, 'ok');
+    showDownloadActions();
 
     if(typeof salesSection !== 'undefined' && salesSection) salesSection.setRows(rows, SALES_HEADERS, file.name.replace(/\.pdf$/i,'') + ' (Gemini extract)');
   }
