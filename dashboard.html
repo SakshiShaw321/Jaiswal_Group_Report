@@ -241,7 +241,7 @@ tbody tr:hover{ background:var(--surface-soft); }
 .conv-preview table thead th{ position:sticky; top:0; background:var(--surface); }
 .conv-preview .empty-hint{ padding:26px 16px; text-align:center; color:var(--ink-muted); font-size:12.8px; }
 
-.conv-actions{ display:flex; gap:10px; margin-top:14px; }
+.conv-actions{ display:flex; gap:10px; margin-top:14px; align-items:center; flex-wrap:wrap; }
 .conv-btn{
   font-size:12px; font-weight:700; padding:8px 16px; border-radius:20px; cursor:pointer;
   border:1px solid var(--gold-line); background:var(--gold-wash); color:var(--gold-deep);
@@ -249,6 +249,14 @@ tbody tr:hover{ background:var(--surface-soft); }
 .conv-btn:hover{ background:var(--gold-soft); }
 .conv-btn[disabled]{ opacity:.45; cursor:not-allowed; }
 .conv-btn.ghost{ background:var(--surface-soft); border-color:var(--hair-strong); color:var(--ink-2); }
+.conv-btn.download{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:13.5px; font-weight:800; padding:12px 20px; border-radius:10px;
+  border:1px solid var(--gold-deep); background:var(--gold); color:#fff;
+  box-shadow: 0 4px 12px -4px rgba(184,134,11,0.55);
+}
+.conv-btn.download:hover{ background:var(--gold-deep); color:#fff; }
+.conv-btn.download .dl-ico{ font-size:16px; line-height:1; }
 
 /* ---------- AI bill extractor ---------- */
 .pdfx-keyrow{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
@@ -738,8 +746,8 @@ footer{ text-align:center; padding:40px 0 10px; font-size:11.5px; color:var(--in
     </label>
 
     <div class="pdfx-status" id="pdfx-status"></div>
-    <div class="tbl-wrap conv-preview" id="pdfx-preview" style="display:none;"></div>
     <div class="conv-actions" id="pdfx-actions" style="display:none;"></div>
+    <div class="tbl-wrap conv-preview" id="pdfx-preview" style="display:none;"></div>
 
   </div>
 
@@ -754,8 +762,8 @@ footer{ text-align:center; padding:40px 0 10px; font-size:11.5px; color:var(--in
     </label>
 
     <div class="pdfx-status" id="pdfx-sales-status"></div>
-    <div class="tbl-wrap conv-preview" id="pdfx-sales-preview" style="display:none;"></div>
     <div class="conv-actions" id="pdfx-sales-actions" style="display:none;"></div>
+    <div class="tbl-wrap conv-preview" id="pdfx-sales-preview" style="display:none;"></div>
 
   </div>
 </section>
@@ -1569,16 +1577,21 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
     if(btn){ btn.textContent = 'Downloaded'; setTimeout(()=>btn.textContent=orig,1400); }
   }
 
-  function showDownloadActions(){
-    actionsEl.style.display = '';
-    actionsEl.innerHTML = `<button class="conv-btn" id="pdfx-dl-xlsx" type="button">Download Excel (.xlsx)</button>`;
+  function showDownloadActions(rowCount){
+    if(!actionsEl) return;
+    actionsEl.style.display = 'flex';
+    actionsEl.innerHTML = `
+      <button class="conv-btn download" id="pdfx-dl-xlsx" type="button">
+        <span class="dl-ico" aria-hidden="true">⬇</span>
+        Download Excel (.xlsx)
+      </button>
+      <span style="font-size:12.5px;color:var(--ink-muted);">${rowCount} row${rowCount===1?'':'s'} ready</span>`;
     document.getElementById('pdfx-dl-xlsx').addEventListener('click', downloadExtractedXlsx);
   }
 
   async function extractWithGemini(file){
     setStatus('<span class="spin"></span>Sending PDF to extraction server…');
-    actionsEl.style.display = 'none';
-    actionsEl.innerHTML = '';
+    if(actionsEl){ actionsEl.style.display = 'none'; actionsEl.innerHTML = ''; }
     previewEl.style.display = 'none';
     lastExtract = { rows: null, fileName: '' };
 
@@ -1592,7 +1605,10 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
         body: form
       });
     }catch(networkErr){
-      setStatus('Could not reach the extraction server. Confirm the dashboard server (<code>python app.py</code>) is running.', 'err');
+      const hint = location.protocol === 'file:'
+        ? 'Open the app at <code>http://127.0.0.1:5000/</code> (run <code>python app.py</code> first) — do not open <code>dashboard.html</code> as a file.'
+        : 'Confirm the dashboard server (<code>python app.py</code>) is running, then open <code>http://127.0.0.1:5000/</code>.';
+      setStatus('Could not reach the extraction server. ' + hint, 'err');
       return;
     }
 
@@ -1619,8 +1635,8 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
       <thead><tr>${PURCHASE_HEADERS.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(r=>`<tr>${PURCHASE_HEADERS.map(h=>`<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</tbody>
     </table>`;
-    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'}. Download the Excel register below.`, 'ok');
-    showDownloadActions();
+    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'} successfully.`, 'ok');
+    showDownloadActions(rows.length);
 
     if(purchaseSection) purchaseSection.setRows(rows, PURCHASE_HEADERS, file.name.replace(/\.pdf$/i,'') + ' (Gemini extract)');
   }
@@ -1665,16 +1681,21 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
     if(btn){ btn.textContent = 'Downloaded'; setTimeout(()=>btn.textContent=orig,1400); }
   }
 
-  function showDownloadActions(){
-    actionsEl.style.display = '';
-    actionsEl.innerHTML = `<button class="conv-btn" id="pdfx-sales-dl-xlsx" type="button">Download Excel (.xlsx)</button>`;
+  function showDownloadActions(rowCount){
+    if(!actionsEl) return;
+    actionsEl.style.display = 'flex';
+    actionsEl.innerHTML = `
+      <button class="conv-btn download" id="pdfx-sales-dl-xlsx" type="button">
+        <span class="dl-ico" aria-hidden="true">⬇</span>
+        Download Excel (.xlsx)
+      </button>
+      <span style="font-size:12.5px;color:var(--ink-muted);">${rowCount} row${rowCount===1?'':'s'} ready</span>`;
     document.getElementById('pdfx-sales-dl-xlsx').addEventListener('click', downloadExtractedXlsx);
   }
 
   async function extractSalesWithGemini(file){
     setStatus('<span class="spin"></span>Sending PDF to extraction server…');
-    actionsEl.style.display = 'none';
-    actionsEl.innerHTML = '';
+    if(actionsEl){ actionsEl.style.display = 'none'; actionsEl.innerHTML = ''; }
     previewEl.style.display = 'none';
     lastExtract = { rows: null, fileName: '' };
 
@@ -1688,7 +1709,10 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
         body: form
       });
     }catch(networkErr){
-      setStatus('Could not reach the extraction server. Confirm the dashboard server (<code>python app.py</code>) is running.', 'err');
+      const hint = location.protocol === 'file:'
+        ? 'Open the app at <code>http://127.0.0.1:5000/</code> (run <code>python app.py</code> first) — do not open <code>dashboard.html</code> as a file.'
+        : 'Confirm the dashboard server (<code>python app.py</code>) is running, then open <code>http://127.0.0.1:5000/</code>.';
+      setStatus('Could not reach the extraction server. ' + hint, 'err');
       return;
     }
 
@@ -1715,8 +1739,8 @@ const salesSection = convSetupSection('sales', 'file-sales', document.querySelec
       <thead><tr>${SALES_HEADERS.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(r=>`<tr>${SALES_HEADERS.map(h=>`<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</tbody>
     </table>`;
-    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'}. Download the Excel register below.`, 'ok');
-    showDownloadActions();
+    setStatus(`Extracted ${rows.length} line item${rows.length===1?'':'s'} successfully.`, 'ok');
+    showDownloadActions(rows.length);
 
     if(typeof salesSection !== 'undefined' && salesSection) salesSection.setRows(rows, SALES_HEADERS, file.name.replace(/\.pdf$/i,'') + ' (Gemini extract)');
   }

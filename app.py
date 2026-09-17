@@ -109,7 +109,10 @@ CORS(app)
 
 @app.route("/")
 def index():
-    return send_from_directory(BASE_DIR, "dashboard.html")
+    resp = send_from_directory(BASE_DIR, "dashboard.html")
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
 
 
 @app.route("/data/<path:filename>")
