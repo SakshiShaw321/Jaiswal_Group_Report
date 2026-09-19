@@ -3,4 +3,4 @@ config.js
 __pycache__/
 *.pyc
 .netlify/
-node_modules/
+node_modules/11

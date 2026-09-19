@@ -31,7 +31,8 @@ GEMINI_URL = (
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
+DATA_DIR = os.path.join(BASE_DIR, "data", "Reports")
+ASSETS_DIR = os.path.join(BASE_DIR, "data")
 
 PURCHASE_HEADERS = [
     "Purchaser Invoice No",
@@ -118,6 +119,11 @@ def index():
 @app.route("/data/<path:filename>")
 def data_file(filename):
     return send_from_directory(DATA_DIR, filename)
+
+
+@app.route("/assets/<path:filename>")
+def assets_file(filename):
+    return send_from_directory(ASSETS_DIR, filename)
 
 
 # --------------------------------------------------------- gemini call ----
