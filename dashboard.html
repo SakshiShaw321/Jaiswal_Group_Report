@@ -296,6 +296,11 @@
       margin-bottom: 10px;
     }
 
+    .insight .tag.ok {
+      color: var(--accent-deep);
+      background: var(--accent-soft)
+    }
+
     .insight .tag.warn {
       color: var(--warn);
       background: var(--warn-bg)
@@ -541,7 +546,54 @@
 
     .chart {
       width: 100%;
-      height: 280px
+      height: 280px;
+      min-height: 240px;
+    }
+
+    .chart.tall {
+      height: 360px;
+      min-height: 320px;
+    }
+
+    .silent-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 4px 0 12px;
+    }
+
+    .silent-toolbar .chip {
+      border: 1px solid var(--line-strong);
+      background: var(--surface-2);
+      color: var(--ink-2);
+      font-size: 12px;
+      font-weight: 650;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .silent-toolbar .chip.active {
+      background: var(--accent-soft);
+      border-color: var(--accent-line);
+      color: var(--accent-deep);
+    }
+
+    .silent-toolbar .meta {
+      margin-left: auto;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .silent-table-wrap {
+      max-height: 520px;
+    }
+
+    #pay-silent-table td.due-hot {
+      color: var(--bad);
+      font-weight: 700;
     }
 
     .callout {
@@ -629,11 +681,11 @@
       font-size: 12.2px
     }
 
-    #pay-silent-table td:first-child,
-    #pay-silent-table th:first-child {
+    #pay-silent-table td:nth-child(2),
+    #pay-silent-table th:nth-child(2) {
       white-space: normal;
-      min-width: 148px;
-      max-width: 220px;
+      min-width: 160px;
+      max-width: 240px;
     }
 
     .badge {
@@ -1018,11 +1070,11 @@
       <div class="kpi-grid" id="rec-kpis"></div>
       <div class="callout" id="rec-callout"></div>
 
-      <div class="grid-2" style="grid-template-columns: max-content 1fr;">
+      <div class="grid-2 equal">
         <div class="panel">
           <h3>Outstanding by party type</h3>
           <p class="cap">Who holds our cash — retailers, wholesalers, or suppliers.</p>
-          <div class="chart" id="rec-party" style="width: 280px;"></div>
+          <div class="chart" id="rec-party"></div>
         </div>
         <div class="panel">
           <h3>Sales vs open balance</h3>
@@ -1031,16 +1083,16 @@
         </div>
       </div>
 
-      <div class="grid-2" style="grid-template-columns: max-content max-content;">
+      <div class="grid-2 equal">
         <div class="panel">
           <h3>Top outstanding parties</h3>
           <p class="cap">Collection priority — largest open balances.</p>
-          <div class="chart" id="rec-top" style="width: 500px;"></div>
+          <div class="chart" id="rec-top"></div>
         </div>
         <div class="panel">
           <h3>Silent accounts with dues</h3>
           <p class="cap">No sale in 3+ months but credit still open — chase before write-off.</p>
-          <div class="chart" id="rec-silent-dues" style="width: 500px;"></div>
+          <div class="chart" id="rec-silent-dues"></div>
         </div>
       </div>
       <div class="panel" style="min-height:auto">
@@ -1067,26 +1119,17 @@
       <div class="kpi-grid" id="pay-kpis"></div>
       <div class="callout" id="pay-callout"></div>
 
-      <div class="grid-2">
-        <div class="panel">
-          <h3>Monthly collections</h3>
-          <p class="cap">Payment-in cadence — how cash actually arrives.</p>
-          <div class="chart" id="pay-trend"></div>
-        </div>
-
-        <div class="panel">
-          <h3>How they pay</h3>
-          <p class="cap">Mode mix — cash, UPI, cheque, bank.</p>
-          <div class="chart" id="pay-mode"></div>
-        </div>
-
+      <div class="panel" style="margin-bottom:14px">
+        <h3>Monthly collections</h3>
+        <p class="cap">From <code>payemt_transcation.xlsx</code> — payment-in cadence by month.</p>
+        <div class="chart" id="pay-trend" style="height:260px"></div>
       </div>
 
-      <div class="grid-2">
+      <div class="grid-2 equal">
         <div class="panel">
           <h3>Top paying parties</h3>
           <p class="cap">Who settled the most this period.</p>
-          <div class="chart" id="pay-top"></div>
+          <div class="chart tall" id="pay-top"></div>
         </div>
         <div class="panel">
           <h3>Payment size pattern</h3>
@@ -1102,24 +1145,24 @@
         <div class="chart" id="pay-recency" style="height:240px"></div>
       </div>
 
-      <div class="grid-2">
+      <div class="grid-2 equal">
         <div class="panel">
           <h3>No payment in the last 6 months</h3>
-          <p class="cap">Customers with no recorded payment in the last 6 months, ranked by historical sales.</p>
-          <div class="chart" id="pay-no-payment-6"></div>
+          <p class="cap">From <code>payemt_transcation.xlsx</code> + sales register. Parties with no payment-in since the cutoff — bar shows open dues (or historical sales if dues are nil).</p>
+          <div class="chart tall" id="pay-no-payment-6"></div>
         </div>
         <div class="panel">
           <h3>No sale in the last 6 months</h3>
-          <p class="cap">Dormant accounts — last bill older than 6 months.</p>
-          <div class="chart" id="pay-silent-6"></div>
+          <p class="cap">From <code>sales_transcation.xlsx</code> + customer master. Dormant bill-to parties (last invoice &gt; 6 months). <b>Bar = open outstanding</b>, not historical sales — hover shows lifetime sales.</p>
+          <div class="chart tall" id="pay-silent-6"></div>
         </div>
       </div>
 
       <div class="panel" style="min-height:auto; padding-bottom:16px; margin-top:14px">
         <h3>Silent customer list</h3>
-        <p class="cap">Call list from the sales register: last bill, days idle, sales on books, open credit, last
-          payment-in. FY tabs do not change this list.</p>
-        <div class="tbl-wrap" style="max-height:400px" id="pay-silent-table"></div>
+        <p class="cap">Built from <b>both FY sheets</b> in <code>sales_transcation.xlsx</code> (last bill), <code>Customer_details.xlsx</code> (dues / phone / party), and <b>both FY sheets</b> in <code>payemt_transcation.xlsx</code> (last payment-in). Quiet = no sale in 3+ months vs today. FY tabs do not change this list.</p>
+        <div class="silent-toolbar" id="pay-silent-toolbar"></div>
+        <div class="tbl-wrap silent-table-wrap" id="pay-silent-table"></div>
       </div>
     </section>
 
@@ -1192,8 +1235,7 @@
         <div>
           <p class="eyebrow">Expenses</p>
           <h2>Operating costs</h2>
-          <p>From <code>expense.xlsx</code> (Date, Expense Name, Amount, Expense By). Charts appear only when rows are
-            logged.</p>
+          <p>From <code>expense.xlsx</code> — date, head, category, amount, who spent, mode, vendor, branch.</p>
         </div>
         <div class="fy-tabs" data-fy-for="expenses" role="tablist" aria-label="Financial year">
           <button type="button" data-fy="total" class="active">Total</button>
@@ -1202,6 +1244,7 @@
         </div>
       </div>
       <div class="kpi-grid" id="exp-kpis"></div>
+      <div class="callout" id="exp-callout"></div>
       <div id="exp-body"></div>
     </section>
 
@@ -1211,15 +1254,13 @@
         <div>
           <p class="eyebrow">Strategic Insights</p>
           <h2>Actions worth taking this quarter</h2>
-          <p>Derived from live registers — concentration risk, stockouts, and cash stuck in credit. No filler charts.
-          </p>
+          <p>Everything on this page is generated by Gemini from your full report registers — no FY tabs, no static copy.</p>
         </div>
-        <div class="fy-tabs" data-fy-for="insights" role="tablist" aria-label="Financial year">
-          <button type="button" data-fy="total" class="active">Total</button>
-          <button type="button" data-fy="2026-27">FY (2026-27)</button>
-          <button type="button" data-fy="2025-26">FY (2025-26)</button>
-        </div>
+        <button type="button" class="conv-btn" id="insights-refresh" style="font-size:12.5px;padding:8px 14px">
+          Refresh AI insights
+        </button>
       </div>
+      <div class="callout" id="insights-status"></div>
       <div class="insight-grid" id="insight-cards"></div>
     </section>
 
@@ -1228,39 +1269,35 @@
       <div class="section-head">
         <div>
           <p class="eyebrow">Excel Converter</p>
-          <h2>Extract bills to Excel</h2>
-          <p>Upload a PDF purchase or sales bill. Gemini fills the register schema; download the .xlsx when ready.</p>
+          <h2>Excel Converter — Purchase &amp; Sales</h2>
+          <p>Upload a purchase or sales PDF bill. Gemini (via your <code>.env</code> API key) extracts line items into the register schema — then download Excel.</p>
         </div>
       </div>
 
-      <div class="card" id="conv-pdf-extractor">
-        <h3>Purchase bill <span class="pill">Gemini</span></h3>
-        <p class="cap">Fields: Purchaser Invoice No, JG Invoice No, Purchase Date, Supplier Name, Product Category, Item
-          Name, HSN Code, Quantity, Rate (Per Unit), CGST, SGST, Total Amount.</p>
+      <div class="card" id="conv-pdf-extractor" style="margin-bottom:18px;">
+        <h3>AI Purchase Bill Extractor <span class="pill">Gemini</span></h3>
+        <p class="cap">Upload a purchase bill (PDF) and Gemini extracts these 12 fields per line item: <b>Purchaser Invoice No, JG Invoice No, Purchase Date, Supplier Name, Product Category, Item Name, HSN Code, Quantity, Rate (Per Unit), CGST, SGST, Total Amount</b>. It reads the bill's own labels (e.g. "Original Invoice No.", "Purchase No.", "ITEMS", "HSN", "QTY.", "RATE") and leaves Product Category / CGST / SGST / Total Amount blank when the bill doesn't state them. After extraction you can download the rows as an Excel purchase register.</p>
         <label class="dropzone" for="pdfx-file">
           <div class="dz-icon">⇪</div>
-          <div class="dz-text"><b>Choose a purchase PDF</b> or drag it here<br><span>.pdf only · via extraction
-              server</span></div>
+          <div class="dz-text"><b>Click to choose a PDF bill</b> or drag it here<br><span>.pdf only · processed via the Gemini API</span></div>
           <input type="file" id="pdfx-file" accept="application/pdf" hidden>
         </label>
         <div class="pdfx-status" id="pdfx-status"></div>
-        <div class="conv-actions" id="pdfx-actions" style="display:none"></div>
         <div class="tbl-wrap conv-preview" id="pdfx-preview" style="display:none"></div>
+        <div class="conv-actions" id="pdfx-actions" style="display:none"></div>
       </div>
 
-      <div class="card" id="conv-sales-pdf-extractor">
-        <h3>Sales bill <span class="pill">Gemini</span></h3>
-        <p class="cap">Fields: Invoice No, Customer Name, Product Name, Product Category, HSN Code, Quantity, Rate,
-          CGST, SGST, Total Amount.</p>
+      <div class="card" id="conv-sales-pdf-extractor" style="margin-bottom:18px;">
+        <h3>AI Sales Bill Extractor <span class="pill">Gemini</span></h3>
+        <p class="cap">Upload a sales bill (PDF) and Gemini extracts these 11 fields per line item: <b>Invoice No, Billing Date, Customer Name, Product Name, Product Category, HSN Code, Quantity, Rate, CGST, SGST, Total Amount</b>. It reads the bill's own labels (e.g. "Invoice No.", "Billing Date" / "Invoice Date", "Bill To", "ITEMS", "HSN", "QTY.", "RATE") and leaves Product Category / CGST / SGST / Total Amount blank when the bill doesn't state them. After extraction you can download the rows as an Excel sales register.</p>
         <label class="dropzone" for="pdfx-sales-file">
           <div class="dz-icon">⇪</div>
-          <div class="dz-text"><b>Choose a sales PDF</b> or drag it here<br><span>.pdf only · via extraction
-              server</span></div>
+          <div class="dz-text"><b>Click to choose a PDF bill</b> or drag it here<br><span>.pdf only · processed via the Gemini API</span></div>
           <input type="file" id="pdfx-sales-file" accept="application/pdf" hidden>
         </label>
         <div class="pdfx-status" id="pdfx-sales-status"></div>
-        <div class="conv-actions" id="pdfx-sales-actions" style="display:none"></div>
         <div class="tbl-wrap conv-preview" id="pdfx-sales-preview" style="display:none"></div>
+        <div class="conv-actions" id="pdfx-sales-actions" style="display:none"></div>
       </div>
     </section>
 
@@ -1331,7 +1368,10 @@ class PyCharts:
 
         marker = {}
         if grad and hasattr(window, 'barGrad'):
-            marker = window.barGrad(y if orientation == 'h' else y, grad)
+            # Horizontal bars: values are on x; vertical: on y
+            vals = x if orientation == 'h' else y
+            # JSON.stringify so JsProxy becomes a plain dict (json.dumps-safe)
+            marker = JSON.parse(JSON.stringify(window.barGrad(vals, grad)))
         elif color:
             marker = {'color': color}
         elif colors:
@@ -1651,6 +1691,8 @@ print("PyScript Python Chart Engine registered.")
         opacity: 0.95,
       };
     }
+    /* Expose for PyScript chart engine (const/let are not on window by default) */
+    Object.assign(window, { COLORS, GRAD, barGrad, plotLayout, plotCfg, plotHover });
     function fillSoft(hex, a = 0.18) {
       const h = hex.replace("#", "");
       const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
@@ -1662,7 +1704,9 @@ print("PyScript Python Chart Engine registered.")
       const orientation = opt.orientation || 'v';
       let marker = {};
       if (opt.grad) {
-        marker = barGrad(opt.y || opt.x, opt.grad);
+        // Horizontal: amounts are on x (y = labels). Vertical: amounts on y.
+        const vals = orientation === 'h' ? (opt.x || opt.y) : (opt.y || opt.x);
+        marker = barGrad(vals, opt.grad);
       } else if (opt.color) {
         marker = { color: opt.color };
       } else if (opt.colors) {
@@ -1685,11 +1729,17 @@ print("PyScript Python Chart Engine registered.")
         trace.customdata = opt.customdata;
         trace.hovertemplate = '%{customdata}<extra></extra>';
       }
+      const defaultX = orientation === 'h'
+        ? { ...plotLayout.xaxis, showticklabels: false, ticks: '', title: '', tickprefix: '', showgrid: true }
+        : { ...plotLayout.xaxis, tickprefix: '' };
+      const defaultY = orientation === 'h'
+        ? { automargin: true, tickprefix: '' }
+        : { ...plotLayout.yaxis };
       const layout = ovLayout({
         showlegend: false,
         margin: opt.margin || { ...plotLayout.margin },
-        xaxis: opt.xaxis ? { ...plotLayout.xaxis, ...opt.xaxis } : plotLayout.xaxis,
-        yaxis: opt.yaxis ? { ...plotLayout.yaxis, ...opt.yaxis } : plotLayout.yaxis,
+        xaxis: opt.xaxis ? { ...defaultX, ...opt.xaxis } : defaultX,
+        yaxis: opt.yaxis ? { ...defaultY, ...opt.yaxis } : defaultY,
         ...(opt.barmode ? { barmode: opt.barmode } : {}),
       });
       Plotly.newPlot(elId, [trace], layout, plotCfg);
@@ -1766,12 +1816,15 @@ print("PyScript Python Chart Engine registered.")
         legend: { orientation: 'h', y: 1.14 },
         margin: opt.margin || { ...plotLayout.margin, l: 150, r: 72, t: 36 },
         yaxis: opt.yaxis ? { ...plotLayout.yaxis, ...opt.yaxis } : { automargin: true, tickprefix: '' },
-        xaxis: opt.xaxis ? { ...plotLayout.xaxis, ...opt.xaxis } : { ...plotLayout.xaxis, tickprefix: '\u20B9', tickformat: '~s' },
+        xaxis: opt.xaxis ? { ...plotLayout.xaxis, ...opt.xaxis } : { ...plotLayout.xaxis, showticklabels: false, ticks: '', title: '', tickprefix: '', showgrid: true },
       });
       Plotly.newPlot(elId, traces, layout, plotCfg);
     }
 
     function jsPlotPareto(elId, opt) {
+      const cumPct = opt.cumPct || opt.cum_pct || [];
+      const barCustom = opt.barCustom || opt.bar_custom || null;
+      const lineCustom = opt.lineCustom || opt.line_custom || null;
       const traces = [
         {
           x: opt.x,
@@ -1779,19 +1832,19 @@ print("PyScript Python Chart Engine registered.")
           type: 'bar',
           name: 'Outstanding',
           marker: barGrad(opt.y, 'ocean'),
-          customdata: opt.barCustom,
+          customdata: barCustom,
           hovertemplate: '%{customdata}<extra></extra>',
         },
         {
           x: opt.x,
-          y: opt.cumPct,
+          y: cumPct,
           type: 'scatter',
           mode: 'lines+markers',
           name: 'Cumulative %',
           yaxis: 'y2',
           line: { color: COLORS[3], width: 2.5 },
           marker: { size: 7, color: COLORS[3] },
-          customdata: opt.lineCustom,
+          customdata: lineCustom,
           hovertemplate: '%{customdata}<extra></extra>',
         },
       ];
@@ -1800,35 +1853,20 @@ print("PyScript Python Chart Engine registered.")
         legend: { orientation: 'h', y: 1.18 },
         margin: { ...plotLayout.margin, t: 40, b: 64, r: 16 },
         xaxis: { ...plotLayout.xaxis, tickangle: -35, tickprefix: '' },
+        yaxis: { ...plotLayout.yaxis, tickprefix: '\u20B9', tickformat: '~s' },
         yaxis2: { title: '', overlaying: 'y', side: 'right', range: [0, 105], ticksuffix: '%', gridcolor: 'transparent' },
       });
       Plotly.newPlot(elId, traces, layout, plotCfg);
     }
 
+    /* Prefer JS Plotly helpers — PyScript path often fails serialization / races and leaves blank charts */
     const PyPlot = {
-      bar: (el, opt) => {
-        try { if (window.pyCharts && window.pyCharts.bar) return window.pyCharts.bar(el, opt); } catch (e) { console.warn('PyScript bar fallback:', e); }
-        return jsPlotBar(el, opt);
-      },
-      pie: (el, opt) => {
-        try { if (window.pyCharts && window.pyCharts.pie) return window.pyCharts.pie(el, opt); } catch (e) { console.warn('PyScript pie fallback:', e); }
-        return jsPlotPie(el, opt);
-      },
-      trend: (el, opt) => {
-        try { if (window.pyCharts && window.pyCharts.trend) return window.pyCharts.trend(el, opt); } catch (e) { console.warn('PyScript trend fallback:', e); }
-        return jsPlotTrend(el, opt);
-      },
-      groupedBar: (el, opt) => {
-        try { if (window.pyCharts && window.pyCharts.grouped_bar) return window.pyCharts.grouped_bar(el, opt); } catch (e) { console.warn('PyScript groupedBar fallback:', e); }
-        return jsPlotGroupedBar(el, opt);
-      },
-      pareto: (el, opt) => {
-        try { if (window.pyCharts && window.pyCharts.pareto) return window.pyCharts.pareto(el, opt); } catch (e) { console.warn('PyScript pareto fallback:', e); }
-        return jsPlotPareto(el, opt);
-      },
-      empty: (el, msg) => {
-        plotEmpty(el, msg);
-      }
+      bar: (el, opt) => jsPlotBar(el, opt),
+      pie: (el, opt) => jsPlotPie(el, opt),
+      trend: (el, opt) => jsPlotTrend(el, opt),
+      groupedBar: (el, opt) => jsPlotGroupedBar(el, opt),
+      pareto: (el, opt) => jsPlotPareto(el, opt),
+      empty: (el, msg) => plotEmpty(el, msg),
     };
 
     async function fetchSheetRows(path, { allSheets = false } = {}) {
@@ -1855,10 +1893,17 @@ print("PyScript Python Chart Engine registered.")
     document.getElementById('tabs').addEventListener('click', e => {
       const btn = e.target.closest('button[data-view]');
       if (!btn) return;
+      const viewId = btn.dataset.view;
       document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === btn.dataset.view));
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === viewId));
+      // Re-draw while visible — Plotly plots created under display:none stay blank after resize alone
+      if (typeof renderView === 'function') renderView(viewId);
       requestAnimationFrame(() => {
-        document.querySelectorAll(`#${btn.dataset.view} .js-plotly-plot`).forEach(el => Plotly.Plots.resize(el));
+        requestAnimationFrame(() => {
+          document.querySelectorAll(`#${viewId} .js-plotly-plot`).forEach(el => {
+            try { Plotly.Plots.resize(el); } catch (_) { /* ignore */ }
+          });
+        });
       });
     });
 
@@ -1945,14 +1990,8 @@ print("PyScript Python Chart Engine registered.")
     }
 
     function rerenderAll() {
-      renderOverview();
-      renderInventory();
-      renderReceivables();
-      renderPayments();
-      renderPurchases();
-      renderSales();
-      renderExpenses();
-      renderInsights();
+      const active = document.querySelector('.view.active')?.id || 'overview';
+      renderView(active);
     }
 
     document.querySelectorAll('.fy-tabs').forEach(group => {
@@ -1996,10 +2035,13 @@ print("PyScript Python Chart Engine registered.")
     }
     function mapCustomers(raw) {
       return raw.map(r => ({
-        name: String(pick(r, 'Customer Name') || ''),
-        outstanding: toNum(pick(r, 'Outstanding')),
-        party: String(pick(r, 'Party Category') || 'Unspecified'),
-        product: String(pick(r, 'Product Category') || ''),
+        name: String(pick(r, 'Customer Name') || '').trim(),
+        outstanding: toNum(pick(r, 'Outstanding', 'Outstanding ', 'Balance', 'Due')),
+        party: String(pick(r, 'Party Category', 'Party Type') || 'Unspecified').trim() || 'Unspecified',
+        product: String(pick(r, 'Product Category') || '').trim(),
+        phone: String(pick(r, 'Contact No', 'Phone', 'Mobile') || '').trim(),
+        gst: String(pick(r, 'GST NO', 'GSTIN', 'GST') || '').trim(),
+        address: String(pick(r, 'Address') || '').trim(),
       })).filter(r => r.name);
     }
     function mapSales(raw) {
@@ -2044,33 +2086,52 @@ print("PyScript Python Chart Engine registered.")
     }
     function mapExpenses(raw) {
       return raw.map(r => {
-        const d = excelDate(pick(r, 'Date'));
-        const name = String(pick(r, 'Expense Name') || '').trim();
+        const d = excelDate(pick(r, 'Date', 'Expense Date'));
+        const name = String(pick(r, 'Expense Name', 'Expense', 'Description') || '').trim();
         const amount = toNum(pick(r, 'Amount'));
-        const by = String(pick(r, 'Expense By') || '').trim();
-        return { date: d, name, amount, by };
+        const by = String(pick(r, 'Expense By', 'By', 'Spent By') || '').trim();
+        let category = String(pick(r, 'Category', 'Expense Category', 'Type') || '').trim();
+        if (!category) category = 'Uncategorized';
+        let mode = String(pick(r, 'Payment Mode', 'Mode', 'Pay Mode') || 'Unspecified').trim() || 'Unspecified';
+        const low = mode.toLowerCase();
+        if (low === 'upi') mode = 'UPI';
+        else if (mode.length) mode = mode.charAt(0).toUpperCase() + mode.slice(1);
+        return {
+          date: d,
+          name,
+          category,
+          amount,
+          by,
+          mode,
+          paidTo: String(pick(r, 'Paid To', 'Vendor', 'Payee') || '').trim(),
+          branch: String(pick(r, 'Branch', 'Location') || '').trim(),
+          ref: String(pick(r, 'Bill / Ref No', 'Bill No', 'Ref No', 'Reference') || '').trim(),
+          notes: String(pick(r, 'Notes', 'Remark', 'Remarks') || '').trim(),
+        };
       }).filter(r => r.name || r.amount);
     }
     function mapPayments(raw) {
       return raw.map(r => {
-        const d = excelDate(pick(r, 'Date'));
-        const modeRaw = String(pick(r, 'Mode') || 'Unspecified').trim();
+        const d = excelDate(pick(r, 'Date', 'Payment Date', 'Txn Date'));
+        const modeRaw = String(pick(r, 'Mode', 'Payment Mode', 'Pay Mode') || 'Unspecified').trim();
         let mode = modeRaw || 'Unspecified';
         const low = mode.toLowerCase();
         if (low === 'upi') mode = 'UPI';
         else if (low === 'netbanking' || low === 'net banking') mode = 'Net banking';
         else if (mode.length) mode = mode.charAt(0).toUpperCase() + mode.slice(1);
+        const party = String(pick(r, 'Party', 'Customer Name', 'Customer', 'Party Name') || '').trim();
+        const received = toNum(pick(r, 'Received', 'Amount', 'Payment', 'Paid'));
         return {
           date: d,
           type: String(pick(r, 'Type') || '').trim(),
-          txn: String(pick(r, 'Txn No') || ''),
-          party: String(pick(r, 'Party') || 'Unknown').trim(),
-          invoices: String(pick(r, 'Invoice numbers') || ''),
+          txn: String(pick(r, 'Txn No', 'Txn No.', 'Transaction No') || ''),
+          party: party || 'Unknown',
+          invoices: String(pick(r, 'Invoice numbers', 'Invoice Numbers', 'Invoices') || ''),
           mode,
-          received: toNum(pick(r, 'Received')),
-          notes: String(pick(r, 'Notes') || ''),
+          received,
+          notes: String(pick(r, 'Notes', 'Remark', 'Remarks') || ''),
         };
-      }).filter(r => r.party && r.received);
+      }).filter(r => (Number(r.received) || 0) > 0);
     }
 
     function startOfToday() {
@@ -2085,7 +2146,42 @@ print("PyScript Python Chart Engine registered.")
       return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     }
     function normName(s) {
-      return String(s || '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim();
+      return String(s || '')
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, ' ')
+        .replace(/\bELECTRRIC\b/g, 'ELECTRIC')
+        .replace(/\bNORRDUSK\b/g, 'NORDUSK')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+    /** Core name without brand tags in parentheses / trailing brand tokens — for cross-file matching. */
+    function coreName(s) {
+      return normName(s)
+        .replace(/\b(NORDUSK|NORDUS|LISTURE|LISTER|LIGHT|NH|NB)\b/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+    /**
+     * Look up a Map keyed by normName, tolerating brand suffixes / minor spelling drift
+     * across sales_transcation, payemt_transcation, and Customer_details.
+     */
+    function mapGetLoose(map, key) {
+      if (!map || !key) return undefined;
+      if (map.has(key)) return map.get(key);
+      const ck = coreName(key);
+      if (ck && map.has(ck)) return map.get(ck);
+      let best;
+      let bestScore = 0;
+      for (const [k, v] of map) {
+        const mk = coreName(k);
+        if (!ck || !mk) continue;
+        if (ck === mk) return v;
+        if (ck.startsWith(mk) || mk.startsWith(ck)) {
+          const score = Math.min(ck.length, mk.length);
+          if (score > bestScore) { bestScore = score; best = v; }
+        }
+      }
+      return best;
     }
     function daysBetween(a, b) {
       if (!a || !b) return null;
@@ -2121,13 +2217,40 @@ print("PyScript Python Chart Engine registered.")
         if (r.date && (!rec.last || r.date > rec.last)) rec.last = r.date;
         if (String(r.party || '').length > String(rec.name || '').length) rec.name = r.party;
         map.set(k, rec);
+        const ck = coreName(r.party);
+        if (ck && !map.has(ck)) map.set(ck, rec);
       });
       return map;
     }
     function outstandingByNorm() {
       const map = new Map();
-      customers.forEach(c => map.set(normName(c.name), Number(c.outstanding) || 0));
+      customers.forEach(c => {
+        const k = normName(c.name);
+        map.set(k, Number(c.outstanding) || 0);
+        const ck = coreName(c.name);
+        if (ck && !map.has(ck)) map.set(ck, Number(c.outstanding) || 0);
+      });
       return map;
+    }
+    function customerMasterByNorm() {
+      const map = new Map();
+      customers.forEach(c => {
+        const k = normName(c.name);
+        map.set(k, c);
+        const ck = coreName(c.name);
+        if (ck && !map.has(ck)) map.set(ck, c);
+      });
+      return map;
+    }
+    function dueOf(duesMap, key) {
+      const v = mapGetLoose(duesMap, key);
+      return Number(v) || 0;
+    }
+    function masterOf(masterMap, key) {
+      return mapGetLoose(masterMap, key) || null;
+    }
+    function payOf(payMap, key) {
+      return mapGetLoose(payMap, key) || null;
     }
     /** Last-sale recency vs today. FY filter does not apply — silence is a current-book question. */
     function salesRecency() {
@@ -2426,13 +2549,13 @@ print("PyScript Python Chart Engine registered.")
       if (!partiesFor80 && ranked.length) partiesFor80 = ranked.length;
       const rec = salesRecency();
       const duesMap = outstandingByNorm();
-      const silentWithDues = rec.silent3.filter(s => (duesMap.get(s.key) || 0) > 0);
+      const silentWithDues = rec.silent3.filter(s => dueOf(duesMap, s.key) > 0);
 
       document.getElementById('rec-kpis').innerHTML = kpiHtml([
         { k: 'Total outstanding', v: fmtINR(total), s: 'Open credit on books' },
         { k: 'Parties with dues', v: fmtNum(withDues.length), s: `of ${fmtNum(customers.length)} parties` },
         { k: 'Top 3 share', v: total ? `${Math.round(100 * top3Share / total)}%` : '—', s: 'Concentration risk' },
-        { k: 'Silent + dues', v: fmtNum(silentWithDues.length), s: `${fmtINR(silentWithDues.reduce((a, s) => a + (duesMap.get(s.key) || 0), 0))} at risk`, tone: silentWithDues.length ? 'bad' : '' },
+        { k: 'Silent + dues', v: fmtNum(silentWithDues.length), s: `${fmtINR(silentWithDues.reduce((a, s) => a + dueOf(duesMap, s.key), 0))} at risk`, tone: silentWithDues.length ? 'bad' : '' },
         { k: 'Largest balance', v: top ? fmtINR(top[1]) : '—', s: top ? shortName(top[0], 36) : '' },
       ]);
 
@@ -2440,38 +2563,43 @@ print("PyScript Python Chart Engine registered.")
     <div style="flex:1;min-width:220px">
       <b>Credit desk · ${esc(periodNote)}</b>
       <span>
-        ${fmtINR(total)} outstanding across ${fmtNum(withDues.length)} parties.${partiesFor80 ? `Roughly <b>${partiesFor80}</b> parties account for 80% of dues.` : ''}${fmtNum(silentWithDues.length)} customer(s) have not billed in 3+ months but still carry open credit.Sales-vs-dues chart uses sales in the selected FY; balances are from the customer master.
+        ${fmtINR(total)} outstanding across ${fmtNum(withDues.length)} parties.
+        ${partiesFor80 ? `Roughly <b>${partiesFor80}</b> parties account for 80% of dues. ` : ''}
+        ${fmtNum(silentWithDues.length)} customer(s) have not billed in 3+ months but still carry open credit.
+        Sales-vs-dues chart uses sales in the selected FY; balances are from the customer master.
       </span>
     </div>`;
 
-      const party = sumBy(withDues, r => r.party, r => r.outstanding);
+      const party = sumBy(withDues, r => r.party || 'Unspecified', r => r.outstanding);
       if (!party.length) {
         PyPlot.empty('rec-party', 'No receivables by party type.');
       } else {
         PyPlot.pie('rec-party', {
           labels: party.map(p => p[0]),
           values: party.map(p => p[1]),
+          colors: COLORS,
           customdata: party.map(p => fmtINR(p[1])),
-          margin: { t: 28, r: 0, b: 0, l: 0 }
+          margin: { t: 28, r: 28, b: 28, l: 28 }
         });
       }
 
       const silentRank = topN(
-        silentWithDues.map(s => ({ name: s.name, due: duesMap.get(s.key) || 0, last: s.last })).sort((a, b) => b.due - a.due),
+        silentWithDues.map(s => ({ name: s.name, due: dueOf(duesMap, s.key), last: s.last })).sort((a, b) => b.due - a.due),
         8
       );
       if (!silentRank.length) {
         PyPlot.empty('rec-silent-dues', 'No silent customer has open credit — good hygiene.');
       } else {
         PyPlot.bar('rec-silent-dues', {
-          y: silentRank.map(d => d.name).reverse(),
+          y: silentRank.map(d => shortName(d.name, 28)).reverse(),
           x: silentRank.map(d => d.due).reverse(),
           orientation: 'h',
           grad: 'sunset',
           text: silentRank.map(d => fmtINR(d.due)).reverse(),
           customdata: silentRank.map(d => `${d.name}<br>Last sale ${fmtDate(d.last)} · ${fmtINR(d.due)} due`).reverse(),
-          margin: { ...plotLayout.margin, l: 150, r: 72 },
-          yaxis: { automargin: true, tickprefix: '' }
+          margin: { ...plotLayout.margin, l: 140, r: 80, t: 12, b: 16 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '' }
         });
       }
 
@@ -2480,14 +2608,15 @@ print("PyScript Python Chart Engine registered.")
         PyPlot.empty('rec-top', 'No parties with open balance on the customer register.');
       } else {
         PyPlot.bar('rec-top', {
-          y: list.map(d => d[0]).reverse(),
+          y: list.map(d => shortName(d[0], 28)).reverse(),
           x: list.map(d => d[1]).reverse(),
           orientation: 'h',
           grad: 'violet',
           text: list.map(d => fmtINR(d[1])).reverse(),
-          customdata: list.map(d => fmtINR(d[1])).reverse(),
-          margin: { ...plotLayout.margin, l: 150, r: 72 },
-          yaxis: { automargin: true, tickprefix: '' }
+          customdata: list.map(d => `${d[0]}<br>${fmtINR(d[1])}`).reverse(),
+          margin: { ...plotLayout.margin, l: 140, r: 80, t: 12, b: 16 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '' }
         });
       }
 
@@ -2504,19 +2633,22 @@ print("PyScript Python Chart Engine registered.")
           traces: [
             {
               name: 'Outstanding',
-              y: compare.map(d => d.name).reverse(),
+              y: compare.map(d => shortName(d.name, 24)).reverse(),
               x: compare.map(d => d.due).reverse(),
               color: COLORS[3],
-              customdata: compare.map(d => fmtINR(d.due)).reverse()
+              customdata: compare.map(d => `${d.name}<br>Outstanding ${fmtINR(d.due)}`).reverse()
             },
             {
               name: `Sales (${periodNote})`,
-              y: compare.map(d => d.name).reverse(),
+              y: compare.map(d => shortName(d.name, 24)).reverse(),
               x: compare.map(d => d.saleAmt).reverse(),
               color: COLORS[0],
-              customdata: compare.map(d => fmtINR(d.saleAmt)).reverse()
+              customdata: compare.map(d => `${d.name}<br>Sales ${fmtINR(d.saleAmt)}`).reverse()
             }
-          ]
+          ],
+          margin: { ...plotLayout.margin, l: 140, r: 48, t: 36, b: 16 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '' }
         });
       }
 
@@ -2531,13 +2663,17 @@ print("PyScript Python Chart Engine registered.")
           x: slice.map(d => shortName(d[0], 16)),
           y: slice.map(d => d[1]),
           cum_pct: cumPct,
-          bar_custom: slice.map(d => fmtINR(d[1])),
-          line_custom: cumPct.map(p => p + '%')
+          bar_custom: slice.map(([name, v]) => `${name}<br>${fmtINR(v)}`),
+          line_custom: cumPct.map(p => p + '% of dues')
         });
       }
 
       requestAnimationFrame(() => {
-        document.querySelectorAll('#customers .js-plotly-plot').forEach(el => Plotly.Plots.resize(el));
+        requestAnimationFrame(() => {
+          document.querySelectorAll('#customers .js-plotly-plot').forEach(el => {
+            try { Plotly.Plots.resize(el); } catch (_) { /* ignore */ }
+          });
+        });
       });
     }
 
@@ -2545,7 +2681,8 @@ print("PyScript Python Chart Engine registered.")
       const pays = fPayments();
       const rec = salesRecency();
       const dues = outstandingByNorm();
-      const payAll = paymentByParty(payments);
+      const master = customerMasterByNorm();
+      const payAll = paymentByParty(payments); // full register — silence is not FY-scoped
       const periodNote = fyLabel(fyPeriod);
       const collected = pays.reduce((a, r) => a + r.received, 0);
       const parties = new Set(pays.map(r => normName(r.party))).size;
@@ -2554,15 +2691,43 @@ print("PyScript Python Chart Engine registered.")
       const silent3 = rec.silent3;
       const silent6 = rec.silent6;
       const silent3Sales = silent3.reduce((a, r) => a + r.amount, 0);
-      const silent3WithDues = silent3.filter(s => (dues.get(s.key) || 0) > 0);
-      const silent3Dues = silent3WithDues.reduce((a, s) => a + (dues.get(s.key) || 0), 0);
+      const silent3WithDues = silent3.filter(s => dueOf(dues, s.key) > 0);
+      const silent3Dues = silent3WithDues.reduce((a, s) => a + dueOf(dues, s.key), 0);
+
+      /* Sales customers with no payment-in in the last 6 months (all payment sheets) */
+      const noPay6 = rec.summaries
+        .map(s => {
+          const pay = payOf(payAll, s.key);
+          const due = dueOf(dues, s.key);
+          const m = masterOf(master, s.key);
+          return {
+            key: s.key,
+            name: s.name,
+            amount: s.amount,
+            last: s.last,
+            due,
+            lastPay: pay?.last || null,
+            payTotal: pay?.received || 0,
+            party: m?.party || '',
+            phone: m?.phone || '',
+            bar: due > 0 ? due : s.amount,
+            barKind: due > 0 ? 'dues' : 'sales',
+          };
+        })
+        .filter(s => !s.lastPay || s.lastPay < rec.cut6)
+        .sort((a, b) => {
+          if (b.due !== a.due) return b.due - a.due;
+          return b.amount - a.amount;
+        });
+      const noPay6Dues = noPay6.reduce((a, r) => a + r.due, 0);
+      const noSale6Dues = silent6.reduce((a, s) => a + dueOf(dues, s.key), 0);
 
       document.getElementById('pay-kpis').innerHTML = kpiHtml([
         { k: 'Collections', v: fmtINR(collected), s: `${fmtNum(pays.length)} payments · ${periodNote}` },
-        { k: 'Paying parties', v: fmtNum(parties), s: 'Unique names on payment-in' },
+        { k: 'Paying parties', v: fmtNum(parties), s: 'Unique names this period' },
         { k: 'Cash share', v: collected ? `${cashShare}%` : '—', s: collected ? fmtINR(cashAmt) + ' in cash' : periodNote },
-        { k: 'Silent 3 months', v: fmtNum(silent3.length), s: `${fmtINR(silent3Sales)} historical sales`, tone: silent3.length >= 15 ? 'bad' : '' },
-        { k: 'Silent 6 months', v: fmtNum(silent6.length), s: 'No bill in half a year', tone: silent6.length >= 8 ? 'bad' : '' },
+        { k: 'No payment 6 mo', v: fmtNum(noPay6.length), s: noPay6Dues ? `${fmtINR(noPay6Dues)} still owed` : 'vs sales register', tone: noPay6.length >= 10 ? 'bad' : '' },
+        { k: 'No sale 6 mo', v: fmtNum(silent6.length), s: noSale6Dues ? `${fmtINR(noSale6Dues)} open credit` : 'Dormant bill-to', tone: silent6.length >= 8 ? 'bad' : '' },
       ]);
 
       const topPayer = topN(sumBy(pays, r => r.party, r => r.received), 1)[0];
@@ -2572,12 +2737,13 @@ print("PyScript Python Chart Engine registered.")
       <span>
         ${fmtINR(collected)} received across ${fmtNum(pays.length)} payment-in rows
         (${cashShare}% cash).
-        ${fmtNum(silent3.length)} customers have not billed since ${fmtDate(rec.cut3)}
-        (${fmtINR(silent3Sales)} of historical sales);
-        ${fmtNum(silent3WithDues.length)} of them still have open credit (${fmtINR(silent3Dues)}).
-        ${fmtNum(silent6.length)} have been quiet since ${fmtDate(rec.cut6)}.
+        <b>${fmtNum(noPay6.length)}</b> sales customers have no payment-in since ${fmtDate(rec.cut6)}
+        (${fmtINR(noPay6Dues)} open dues).
+        <b>${fmtNum(silent6.length)}</b> have not billed since ${fmtDate(rec.cut6)}
+        (${fmtINR(noSale6Dues)} open dues).
+        ${fmtNum(silent3.length)} quiet 3+ months (${fmtINR(silent3Dues)} at risk).
         ${topPayer ? `Largest payer this period: <b>${esc(topPayer[0])}</b> (${fmtINR(topPayer[1])}).` : ''}
-        Silence is measured against today, not the FY filter.
+        Silence uses the full payment &amp; sales registers against today — not the FY filter.
       </span>
     </div>`;
 
@@ -2586,11 +2752,14 @@ print("PyScript Python Chart Engine registered.")
       const tMap = Object.fromEntries(trend);
       const pMonths = periodMonthSpine() || fillMonths(trend.map(t => t[0]));
       if (!pMonths.length) {
-        PyPlot.empty('pay-trend', pays.length ? `No dated payment-in rows in ${periodNote}.` : `No rows in <code>payemt_transcation.xlsx</code> for ${periodNote}.`);
+        PyPlot.empty('pay-trend', payments.length
+          ? `No dated payment-in rows in ${periodNote}. Try Total.`
+          : 'No rows loaded from payemt_transcation.xlsx — close the file in Excel and refresh.');
       } else {
         PyPlot.trend('pay-trend', {
           x: pMonths.map(monthLabel),
           series: [{
+            name: 'Collections',
             y: pMonths.map(m => tMap[m] || 0),
             color: COLORS[0],
             fill: true,
@@ -2599,32 +2768,24 @@ print("PyScript Python Chart Engine registered.")
         });
       }
 
-      const modes = sumBy(pays, r => r.mode || 'Unspecified', r => r.received);
-      if (!modes.length) {
-        PyPlot.empty('pay-mode', `No payment-in rows in ${periodNote}.`);
-      } else {
-        PyPlot.pie('pay-mode', {
-          labels: modes.map(m => m[0]),
-          values: modes.map(m => m[1]),
-          hole: 0.55,
-          customdata: modes.map(m => fmtINR(m[1])),
-          margin: { t: 20, r: 20, b: 20, l: 20 }
-        });
-      }
+      // mode pie removed — cash share still shown in KPIs / callout
 
-      const topPay = topN(sumBy(pays, r => r.party, r => r.received), 10);
+      const topPay = topN(sumBy(pays, r => r.party, r => r.received), 12);
       if (!topPay.length) {
-        PyPlot.empty('pay-top', `No paying parties in ${periodNote}.`);
+        PyPlot.empty('pay-top', payments.length
+          ? `No paying parties in ${periodNote}. Try Total or another FY.`
+          : 'No rows loaded from payemt_transcation.xlsx — close the file in Excel and refresh.');
       } else {
         PyPlot.bar('pay-top', {
-          y: topPay.map(d => shortName(d[0], 26)).reverse(),
+          y: topPay.map(d => shortName(d[0], 28)).reverse(),
           x: topPay.map(d => d[1]).reverse(),
           orientation: 'h',
           grad: 'mint',
           text: topPay.map(d => fmtINR(d[1])).reverse(),
           customdata: topPay.map(d => `${d[0]} · ${fmtINR(d[1])}`).reverse(),
-          margin: { ...plotLayout.margin, l: 148, r: 72 },
-          yaxis: { automargin: true, tickprefix: '' }
+          margin: { ...plotLayout.margin, l: 150, r: 80, t: 12, b: 24 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '', showgrid: true }
         });
       }
 
@@ -2643,17 +2804,19 @@ print("PyScript Python Chart Engine registered.")
         if (bucket) { bucket.n += 1; bucket.amt += v; }
       });
       if (!pays.length) {
-        PyPlot.empty('pay-size', `No payment-in rows in ${periodNote}.`);
+        PyPlot.empty('pay-size', payments.length
+          ? `No payment-in rows in ${periodNote}.`
+          : 'No rows loaded from payemt_transcation.xlsx — close the file in Excel and refresh.');
       } else {
         PyPlot.bar('pay-size', {
           x: sizeCounts.map(b => b.label),
-          y: sizeCounts.map(b => b.n),
+          y: sizeCounts.map(b => b.amt),
           grad: 'amber',
-          text: sizeCounts.map(b => b.n ? String(b.n) : ''),
+          text: sizeCounts.map(b => b.n ? `${b.n} · ${fmtINR(b.amt)}` : ''),
           customdata: sizeCounts.map(b => `${b.n} payments · ${fmtINR(b.amt)}`),
           margin: { ...plotLayout.margin, t: 28, b: 56 },
           xaxis: { ...plotLayout.xaxis, tickprefix: '', tickangle: 0 },
-          yaxis: { ...plotLayout.yaxis, tickprefix: '', tickformat: 'd', title: { text: 'Payments', font: { size: 11, color: '#8C6A4A' } } }
+          yaxis: { ...plotLayout.yaxis, title: { text: 'Amount collected', font: { size: 11, color: '#8C6A4A' } } }
         });
       }
 
@@ -2678,86 +2841,164 @@ print("PyScript Python Chart Engine registered.")
         });
       }
 
-      function plotSilent(elId, list, emptyMsg, scale) {
-        const ranked = topN([...list].sort((a, b) => b.amount - a.amount), 12);
-        if (!ranked.length) {
-          PyPlot.empty(elId, emptyMsg);
-          return;
-        }
-        PyPlot.bar(elId, {
-          y: ranked.map(d => shortName(d.name, 26)).reverse(),
-          x: ranked.map(d => d.amount).reverse(),
+      /* —— No payment ≥ 6 months (horizontal, dues-first) —— */
+      const noPayRank = topN(noPay6, 12);
+      if (!noPayRank.length) {
+        PyPlot.empty('pay-no-payment-6', 'Every sales customer has a payment-in within the last 6 months.');
+      } else {
+        PyPlot.bar('pay-no-payment-6', {
+          y: noPayRank.map(d => shortName(d.name, 28)).reverse(),
+          x: noPayRank.map(d => d.bar).reverse(),
           orientation: 'h',
-          grad: scale,
-          text: ranked.map(d => fmtINR(d.amount)).reverse(),
-          customdata: ranked.map(d => {
-            const idle = daysBetween(d.last, rec.asOf);
-            const due = dues.get(d.key) || 0;
-            return `${d.name}<br>${fmtDate(d.last)} · ${idle} days idle${due ? ` · dues ${fmtINR(due)}` : ''}`;
+          grad: 'coral',
+          text: noPayRank.map(d => fmtINR(d.bar)).reverse(),
+          customdata: noPayRank.map(d => {
+            const idlePay = d.lastPay ? daysBetween(d.lastPay, rec.asOf) : null;
+            return `${d.name}<br>`
+              + `Open dues ${fmtINR(d.due)} · Historical sales ${fmtINR(d.amount)}<br>`
+              + (d.lastPay
+                ? `Last payment ${fmtDate(d.lastPay)} (${idlePay} days ago) · lifetime paid ${fmtINR(d.payTotal)}`
+                : 'Never recorded on payment-in')
+              + `<br>Last sale ${fmtDate(d.last)} · Bar = ${d.barKind === 'dues' ? 'outstanding' : 'historical sales'}`;
           }).reverse(),
-          margin: { ...plotLayout.margin, l: 148, r: 72 },
-          yaxis: { automargin: true, tickprefix: '' }
+          margin: { ...plotLayout.margin, l: 150, r: 80, t: 8, b: 16 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '', showgrid: true }
         });
       }
-      plotSilent('pay-silent-3', silent3, 'Every customer on the sales register has billed in the last 3 months.', 'coral');
-      plotSilent('pay-silent-6', silent6, 'No customer has been quiet for 6 months or more.', 'sunset');
-        // Plot chart for No payment in the last 6 months
-        const partySet = new Set(pays.map(r => normName(r.party)));
-        const lastPayMap = new Map();
-        pays.forEach(p => {
-          if (!p.date) return;
-          const key = normName(p.party);
-          const existing = lastPayMap.get(key);
-          if (!existing || p.date > existing) {
-            lastPayMap.set(key, p.date);
-          }
+
+      /* —— No sale ≥ 6 months (bars = outstanding from customer master) —— */
+      const noSaleAll = [...silent6]
+        .map(s => ({ ...s, due: dueOf(dues, s.key), pay: payOf(payAll, s.key) }))
+        .sort((a, b) => {
+          if (b.due !== a.due) return b.due - a.due;
+          return b.amount - a.amount;
         });
-        const cutoff = rec.cut6;
-        let noPayCount = 0;
-        partySet.forEach(pk => {
-          const last = lastPayMap.get(pk);
-          if (!last || last < cutoff) noPayCount++;
-        });
-        PyPlot.pie('pay-no-payment-6', {
-          labels: ['No payment ≥6 mo', 'Paid ≤6 mo'],
-          values: [noPayCount, partySet.size - noPayCount],
-          hole: .5,
-          colors: ['#B91C1C', '#6B8F3C'],
-          hovertemplate: '%{label}: %{value}<extra></extra>',
-          margin: { t: 20, r: 20, b: 20, l: 20 }
-        });
-      const rows = [...silent3].sort((a, b) => {
-        const da = dues.get(a.key) || 0, db = dues.get(b.key) || 0;
-        if (db !== da) return db - da;
-        return b.amount - a.amount;
-      });
-      const tableEl = document.getElementById('pay-silent-table');
-      if (!rows.length) {
-        tableEl.innerHTML = `<div style="padding:24px;color:var(--muted);text-align:center">No silent customers — every bill-to party has a sale in the last 3 months.</div>`;
+      const noSaleRank = topN(noSaleAll, 12);
+      if (!noSaleRank.length) {
+        PyPlot.empty('pay-silent-6', 'No customer has been quiet for 6 months or more.');
       } else {
+        PyPlot.bar('pay-silent-6', {
+          y: noSaleRank.map(d => shortName(d.name, 28)).reverse(),
+          x: noSaleRank.map(d => d.due).reverse(),
+          orientation: 'h',
+          colors: noSaleRank.map(d => d.due > 0 ? '#B91C1C' : COLORS[2]).reverse(),
+          text: noSaleRank.map(d => d.due > 0 ? fmtINR(d.due) : '₹0 dues').reverse(),
+          customdata: noSaleRank.map(d => {
+            const idle = daysBetween(d.last, rec.asOf);
+            return `${d.name}<br>`
+              + `<b>Outstanding ${fmtINR(d.due)}</b> (customer master)<br>`
+              + `Historical sales ${fmtINR(d.amount)} · last sale ${fmtDate(d.last)} (${idle} days idle)`
+              + (d.pay?.last ? `<br>Last payment ${fmtDate(d.pay.last)} · lifetime paid ${fmtINR(d.pay.received)}` : '<br>No payment-in on file');
+          }).reverse(),
+          margin: { ...plotLayout.margin, l: 150, r: 88, t: 8, b: 16 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '', showgrid: true }
+        });
+      }
+
+      /* —— Silent customer call list —— */
+      const silentRows = [...silent3]
+        .map(r => {
+          const due = dueOf(dues, r.key);
+          const lastPay = payOf(payAll, r.key);
+          const m = masterOf(master, r.key);
+          const is6 = r.last < rec.cut6;
+          return {
+            key: r.key,
+            name: r.name,
+            last: r.last,
+            amount: r.amount,
+            due,
+            lastPay,
+            is6,
+            idle: daysBetween(r.last, rec.asOf),
+            party: m?.party || '—',
+            phone: m?.phone || '',
+            filter: due > 0 ? (is6 ? 'dues6' : 'dues3') : (is6 ? 'ok6' : 'ok3'),
+          };
+        })
+        .sort((a, b) => {
+          if (b.due !== a.due) return b.due - a.due;
+          return b.amount - a.amount;
+        });
+
+      const toolbar = document.getElementById('pay-silent-toolbar');
+      const tableEl = document.getElementById('pay-silent-table');
+      const filters = [
+        { id: 'all', label: `All (${silentRows.length})` },
+        { id: 'dues', label: `With dues (${silentRows.filter(r => r.due > 0).length})` },
+        { id: '6', label: `6+ months (${silentRows.filter(r => r.is6).length})` },
+        { id: '3', label: `3–6 months (${silentRows.filter(r => !r.is6).length})` },
+        { id: 'nopay', label: `No payment-in (${silentRows.filter(r => !r.lastPay).length})` },
+      ];
+
+      function paintSilentTable(filterId) {
+        const rows = silentRows.filter(r => {
+          if (filterId === 'dues') return r.due > 0;
+          if (filterId === '6') return r.is6;
+          if (filterId === '3') return !r.is6;
+          if (filterId === 'nopay') return !r.lastPay;
+          return true;
+        });
+        const duesSum = rows.reduce((a, r) => a + r.due, 0);
+        const salesSum = rows.reduce((a, r) => a + r.amount, 0);
+        toolbar.innerHTML = filters.map(f =>
+          `<button type="button" class="chip${f.id === filterId ? ' active' : ''}" data-silent-filter="${f.id}">${esc(f.label)}</button>`
+        ).join('') + `<span class="meta">${fmtNum(rows.length)} shown · ${fmtINR(duesSum)} dues · ${fmtINR(salesSum)} hist. sales</span>`;
+
+        toolbar.querySelectorAll('[data-silent-filter]').forEach(btn => {
+          btn.addEventListener('click', () => paintSilentTable(btn.dataset.silentFilter));
+        });
+
+        if (!rows.length) {
+          tableEl.innerHTML = `<div style="padding:28px;color:var(--muted);text-align:center">No customers in this filter.</div>`;
+          return;
+        }
+
         tableEl.innerHTML = `<table>
       <thead><tr>
-        <th>Customer</th><th>Last sale</th><th class="num">Days idle</th>
-        <th>Status</th><th class="num">Historical sales</th>
-        <th class="num">Outstanding</th><th>Last payment-in</th>
+        <th>#</th>
+        <th>Customer</th>
+        <th>Party</th>
+        <th>Phone</th>
+        <th>Last sale</th>
+        <th class="num">Days idle</th>
+        <th>Status</th>
+        <th class="num">Historical sales</th>
+        <th class="num">Outstanding</th>
+        <th>Last payment-in</th>
       </tr></thead>
-      <tbody>${rows.map(r => {
-          const idle = daysBetween(r.last, rec.asOf);
-          const due = dues.get(r.key) || 0;
-          const lastPay = payAll.get(r.key);
-          const is6 = silent6.some(s => s.key === r.key);
-          const badge = is6 ? `<span class="badge bad">6+ months</span>` : `<span class="badge warn">3–6 months</span>`;
+      <tbody>${rows.map((r, i) => {
+          const badge = r.is6
+            ? `<span class="badge bad">6+ months</span>`
+            : `<span class="badge warn">3–6 months</span>`;
+          const payCell = r.lastPay
+            ? `${fmtDate(r.lastPay.last)} · ${fmtINR(r.lastPay.received)}`
+            : '<span class="badge bad">No payment-in</span>';
           return `<tr>
+          <td class="num tabular">${i + 1}</td>
           <td>${esc(r.name)}</td>
+          <td>${esc(r.party)}</td>
+          <td>${r.phone ? esc(r.phone) : '—'}</td>
           <td>${fmtDate(r.last)}</td>
-          <td class="num tabular">${idle == null ? '—' : fmtNum(idle)}</td>
+          <td class="num tabular">${r.idle == null ? '—' : fmtNum(r.idle)}</td>
           <td>${badge}</td>
           <td class="num tabular">${fmtINR(r.amount)}</td>
-          <td class="num tabular">${due ? fmtINR(due) : '—'}</td>
-          <td>${lastPay ? `${fmtDate(lastPay.last)} · ${fmtINR(lastPay.received)}` : 'No payment-in'}</td>
+          <td class="num tabular${r.due > 0 ? ' due-hot' : ''}">${r.due ? fmtINR(r.due) : '—'}</td>
+          <td>${payCell}</td>
         </tr>`;
         }).join('')}</tbody></table>`;
       }
+      paintSilentTable('dues');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.querySelectorAll('#payments .js-plotly-plot').forEach(el => {
+            try { Plotly.Plots.resize(el); } catch (_) { /* ignore */ }
+          });
+        });
+      });
     }
 
     function renderSales() {
@@ -2802,7 +3043,17 @@ print("PyScript Python Chart Engine registered.")
         yaxis: { automargin: true, tickprefix: '' }
       });
 
-      const cats = topN(sumBy(sales, r => r.category, r => r.amount), 8);
+      const cats = topN(
+        sumBy(
+          sales.filter(r => {
+            const c = String(r.category || '').trim().toLowerCase();
+            return c && c !== 'uncategorized';
+          }),
+          r => r.category,
+          r => r.amount
+        ),
+        8
+      );
       PyPlot.bar('sales-cat', {
         x: cats.map(c => c[0]),
         y: cats.map(c => c[1]),
@@ -2858,148 +3109,389 @@ print("PyScript Python Chart Engine registered.")
       const expenses = fExpenses();
       const body = document.getElementById('exp-body');
       const kpis = document.getElementById('exp-kpis');
-      if (!expenses.length) {
-        kpis.innerHTML = '';
-        body.innerHTML = `<div class="empty-state">
-      <h3>No expenses logged yet</h3>
-      <p>Add rows to <code>data/Reports/expense.xlsx</code> (Date, Expense Name, Amount, Expense By). Until then we show an honest empty state — no fake spend charts.</p>
-    </div>`;
-        return;
-      }
-      const total = expenses.reduce((a, r) => a + r.amount, 0);
-      const byPerson = sumBy(expenses, r => r.by || 'Unspecified', r => r.amount);
-      const byName = sumBy(expenses, r => r.name || 'Other', r => r.amount);
-      const dated = expenses.filter(r => r.date);
-      kpis.innerHTML = kpiHtml([
-        { k: 'Total expenses', v: fmtINR(total), s: `${fmtNum(expenses.length)} entries` },
-        { k: 'Unique heads', v: fmtNum(byName.length), s: 'Expense names' },
-        { k: 'People logging', v: fmtNum(byPerson.length), s: 'Expense By' },
-        { k: 'Avg entry', v: expenses.length ? fmtINR(total / expenses.length) : '—', s: 'Per line' },
-      ]);
+      const callout = document.getElementById('exp-callout');
+      const periodNote = fyLabel(fyPeriod);
+      const emptyMsg = 'No expense rows yet — add lines in expense.xlsx.';
+
       body.innerHTML = `
-    <div class="grid-2">
-      <div class="panel"><h3>Monthly expenses</h3><p class="cap">Spend cadence from the expense register.</p><div class="chart" id="exp-trend"></div></div>
-      <div class="panel"><h3>By expense head</h3><p class="cap">Where operating rupees go.</p><div class="chart" id="exp-heads"></div></div>
+    <div class="grid-2 equal">
+      <div class="panel">
+        <h3>Monthly spend</h3>
+        <p class="cap">Operating cash out by month from the expense register.</p>
+        <div class="chart" id="exp-trend" style="height:260px"></div>
+      </div>
+      <div class="panel">
+        <h3>Spend by category</h3>
+        <p class="cap">Rent, salary, logistics, utilities, and the rest.</p>
+        <div class="chart" id="exp-category"></div>
+      </div>
+    </div>
+    <div class="grid-2 equal">
+      <div class="panel">
+        <h3>Who is spending</h3>
+        <p class="cap">Amount logged under each Expense By name.</p>
+        <div class="chart" id="exp-by"></div>
+      </div>
+      <div class="panel">
+        <h3>How expenses are paid</h3>
+        <p class="cap">Cash vs bank vs UPI — leakage risk sits in cash.</p>
+        <div class="chart" id="exp-mode"></div>
+      </div>
+    </div>
+    <div class="grid-2 equal">
+      <div class="panel">
+        <h3>Top expense heads</h3>
+        <p class="cap">Largest named line-items (godown rent, salaries, etc.).</p>
+        <div class="chart tall" id="exp-heads"></div>
+      </div>
+      <div class="panel">
+        <h3>Branch / location mix</h3>
+        <p class="cap">Where cost is booked — Ichhapur, Barasat, all units.</p>
+        <div class="chart" id="exp-branch"></div>
+      </div>
     </div>
     <div class="panel" style="min-height:auto;padding-bottom:16px;margin-top:14px">
-      <h3>Recent expense lines</h3>
-      <p class="cap">Latest entries from the register.</p>
-      <div class="tbl-wrap" style="max-height:320px" id="exp-table"></div>
+      <h3>Expense register</h3>
+      <p class="cap">Latest lines from <code>expense.xlsx</code> — full columns for audit.</p>
+      <div class="tbl-wrap" style="max-height:380px" id="exp-table"></div>
     </div>`;
-      if (trend.length) {
-        PyPlot.trend('exp-trend', {
-          x: trend.map(t => monthLabel(t[0])),
-          series: [{
-            y: trend.map(t => t[1]),
-            color: COLORS[4],
-            fill: true
-          }]
-        });
-      } else {
-        PyPlot.empty('exp-trend', 'No valid dates on expense rows yet.');
-      }
-      const heads = topN(byName, 8);
-      PyPlot.bar('exp-heads', {
-        y: heads.map(d => d[0]).reverse(),
-        x: heads.map(d => d[1]).reverse(),
-        orientation: 'h',
-        grad: 'amber',
-        text: heads.map(d => fmtINR(d[1])).reverse(),
-        customdata: heads.map(d => fmtINR(d[1])).reverse(),
-        margin: { ...plotLayout.margin, l: 120 },
-        yaxis: { automargin: true, tickprefix: '' }
-      });
-      const rows = [...expenses].sort((a, b) => (b.date || 0) - (a.date || 0)).slice(0, 40);
-      document.getElementById('exp-table').innerHTML = `<table>
-    <thead><tr><th>Date</th><th>Expense</th><th>By</th><th class="num">Amount</th></tr></thead>
-    <tbody>${rows.map(r => `<tr>
-      <td>${r.date ? r.date.toLocaleDateString('en-IN') : '—'}</td>
-      <td>${esc(r.name)}</td><td>${esc(r.by || '—')}</td>
-      <td class="num tabular">${fmtINR(r.amount)}</td>
-    </tr>`).join('')}</tbody></table>`;
-    }
-
-    function renderInsights() {
-      const stock = fStock(), customers = fCustomers(), sales = fSales(), purchases = fPurchases(), expenses = fExpenses();
-      const stockVal = stock.reduce((a, r) => a + r.value, 0);
-      const recv = customers.reduce((a, r) => a + r.outstanding, 0);
-      const salesVal = sales.reduce((a, r) => a + r.amount, 0);
-      const purVal = purchases.reduce((a, r) => a + r.amount, 0);
-      const oos = stock.filter(r => r.qty <= 0).length;
-      const low = stock.filter(r => r.qty > 0 && r.qty <= 5).length;
-      const topDebtor = topN(sumBy(customers, r => r.name, r => r.outstanding).filter(x => x[1] > 0), 1)[0];
-      const topSup = topN(sumBy(purchases, r => r.supplier, r => r.amount), 1)[0];
-      const topCust = topN(sumBy(sales, r => r.customer, r => r.amount), 1)[0];
-      const debShare = topDebtor && recv ? Math.round(100 * topDebtor[1] / recv) : 0;
-      const supShare = topSup && purVal ? Math.round(100 * topSup[1] / purVal) : 0;
-      const custShare = topCust && salesVal ? Math.round(100 * topCust[1] / salesVal) : 0;
-      const buyVsSell = salesVal ? Math.round(100 * purVal / salesVal) : null;
-
-      const cards = [
-        {
-          tag: debShare >= 25 ? 'bad' : 'warn', tagText: 'Collections',
-          title: topDebtor ? `${esc(topDebtor[0])} holds ~${debShare}% of credit` : 'Receivables look diversified',
-          body: topDebtor
-            ? `${fmtINR(topDebtor[1])} of ${fmtINR(recv)} total outstanding sits with one party. Prioritise a collection call before extending more credit.`
-            : 'No concentrated debtor stood out in the customer ledger.',
-          act: 'Open Customers & Credit → call the top 5 balances this week'
-        },
-        {
-          tag: supShare >= 40 ? 'bad' : 'warn', tagText: 'Supplier risk',
-          title: topSup ? `${supShare}% of purchases from one supplier` : 'Supplier base looks spread',
-          body: topSup
-            ? `<b>${esc(topSup[0])}</b> accounts for ${fmtINR(topSup[1])} of ${fmtINR(purVal)} buy value. Negotiate terms or qualify a backup vendor.`
-            : 'Purchase register does not show a single dominant vendor.',
-          act: 'Review Purchases → top suppliers before the next PO cycle'
-        },
-        {
-          tag: (oos + low) > 20 ? 'warn' : '', tagText: 'Inventory',
-          title: `${fmtNum(oos)} out of stock · ${fmtNum(low)} low`,
-          body: `${fmtINR(stockVal)} is locked in stock across ${fmtNum(stock.length)} SKUs. Reorder the stockout list first — lost sales beat idle capital.`,
-          act: 'Open Inventory Intelligence → Out of stock / low stock'
-        },
-        {
-          tag: custShare >= 30 ? 'warn' : '', tagText: 'Revenue mix',
-          title: topCust ? `Top customer is ~${custShare}% of sales` : 'Sales are reasonably spread',
-          body: topCust
-            ? `<b>${esc(topCust[0])}</b> drove ${fmtINR(topCust[1])} of ${fmtINR(salesVal)} register sales. Protect the account and grow the next tier.`
-            : 'No single customer dominates the sales register.',
-          act: buyVsSell != null
-            ? `Purchases are ~${buyVsSell}% of sales value this period — check if buying is ahead of sell-through`
-            : 'Compare Sales vs Purchases on Overview'
-        },
-      ];
-
-      const rec = salesRecency();
-      const dues = outstandingByNorm();
-      const silentSales = rec.silent3.reduce((a, r) => a + r.amount, 0);
-      const silentDues = rec.silent3.reduce((a, r) => a + (dues.get(r.key) || 0), 0);
-      if (rec.silent3.length) {
-        cards.push({
-          tag: rec.silent6.length >= 8 ? 'bad' : 'warn', tagText: 'Demand',
-          title: `${fmtNum(rec.silent3.length)} customers have not billed in 3 months`,
-          body: `${fmtINR(silentSales)} of historical sales sits with accounts quiet since ${fmtDate(rec.cut3)}. ${fmtNum(rec.silent6.length)} have been dormant 6+ months. Open credit on the silent list: ${fmtINR(silentDues)}.`,
-          act: 'Open Payment Intelligence → silent 3-month / 6-month lists'
-        });
-      }
 
       if (!expenses.length) {
-        cards.push({
-          tag: 'warn', tagText: 'Data gap',
-          title: 'Expense register is empty',
-          body: 'Without expense.xlsx rows you cannot see true operating margin. Log monthly costs (rent, logistics, salaries) so Insights can include cash burn.',
-          act: 'Add rows to data/Reports/expense.xlsx → Expenses tab'
+        kpis.innerHTML = kpiHtml([
+          { k: 'Total expenses', v: '₹0', s: `0 lines · ${periodNote}` },
+          { k: 'Avg / active month', v: '—', s: 'Waiting for rows' },
+          { k: 'Top category', v: '—', s: 'No category yet' },
+          { k: 'Cash share', v: '—', s: 'No payment modes yet' },
+          { k: 'People logging', v: '0', s: 'Expense By empty' },
+        ]);
+        if (callout) {
+          callout.innerHTML = `
+    <div style="flex:1;min-width:220px">
+      <b>Cost desk · empty register</b>
+      <span>
+        <code>expense.xlsx</code> has columns ready (Date, Expense Name, Category, Amount, Expense By, Payment Mode, Paid To, Branch, Bill / Ref No, Notes) but no rows yet.
+        Add your operating costs and these charts will fill automatically. Use the Category Guide sheet for allowed categories.
+      </span>
+    </div>`;
+        }
+        PyPlot.empty('exp-trend', emptyMsg);
+        PyPlot.empty('exp-category', emptyMsg);
+        PyPlot.empty('exp-by', emptyMsg);
+        PyPlot.empty('exp-mode', emptyMsg);
+        PyPlot.empty('exp-heads', emptyMsg);
+        PyPlot.empty('exp-branch', emptyMsg);
+        document.getElementById('exp-table').innerHTML =
+          `<div style="padding:28px;color:var(--muted);text-align:center">${esc(emptyMsg)}</div>`;
+        return;
+      }
+
+      const total = expenses.reduce((a, r) => a + r.amount, 0);
+      const byPerson = sumBy(expenses, r => r.by || 'Unspecified', r => r.amount);
+      const byCat = sumBy(expenses, r => r.category || 'Uncategorized', r => r.amount);
+      const byMode = sumBy(expenses, r => r.mode || 'Unspecified', r => r.amount);
+      const byBranch = sumBy(expenses.filter(r => r.branch), r => r.branch, r => r.amount);
+      const dated = expenses.filter(r => r.date);
+      const trend = monthSeries(dated, 'date', 'amount');
+      const tMap = Object.fromEntries(trend);
+      const months = periodMonthSpine() || fillMonths(trend.map(t => t[0]));
+      const topCat = byCat[0];
+      const cashAmt = expenses.filter(r => String(r.mode).toLowerCase() === 'cash').reduce((a, r) => a + r.amount, 0);
+      const cashShare = total ? Math.round(100 * cashAmt / total) : 0;
+      const monthCount = months.filter(m => (tMap[m] || 0) > 0).length || 1;
+      const avgMonth = total / monthCount;
+
+      kpis.innerHTML = kpiHtml([
+        { k: 'Total expenses', v: fmtINR(total), s: `${fmtNum(expenses.length)} lines · ${periodNote}` },
+        { k: 'Avg / active month', v: fmtINR(avgMonth), s: `${fmtNum(monthCount)} months with spend` },
+        { k: 'Top category', v: topCat ? fmtINR(topCat[1]) : '—', s: topCat ? topCat[0] : 'No category' },
+        { k: 'Cash share', v: `${cashShare}%`, s: fmtINR(cashAmt) + ' paid in cash' },
+        { k: 'People logging', v: fmtNum(byPerson.length), s: byPerson.slice(0, 3).map(p => p[0]).join(', ') },
+      ]);
+
+      if (callout) {
+        callout.innerHTML = `
+    <div style="flex:1;min-width:220px">
+      <b>Cost desk · ${esc(periodNote)}</b>
+      <span>
+        ${fmtINR(total)} across ${fmtNum(expenses.length)} expense lines.
+        Largest bucket: <b>${esc(topCat ? topCat[0] : '—')}</b>
+        (${topCat ? Math.round(100 * topCat[1] / total) : 0}% of spend).
+        ${cashShare}% settled in cash — keep an eye on undocumented cash outflows.
+        Categories follow the guide sheet inside <code>expense.xlsx</code>.
+      </span>
+    </div>`;
+      }
+
+      if (!months.length) {
+        PyPlot.empty('exp-trend', 'No valid dates on expense rows yet.');
+      } else {
+        PyPlot.trend('exp-trend', {
+          x: months.map(monthLabel),
+          series: [{
+            name: 'Expenses',
+            y: months.map(m => tMap[m] || 0),
+            color: COLORS[4],
+            fill: true,
+            customdata: months.map(m => fmtINR(tMap[m] || 0))
+          }]
         });
       }
 
-      document.getElementById('insight-cards').innerHTML = cards.map(c => `
+      const cats = byCat.filter(([c]) => String(c).toLowerCase() !== 'uncategorized');
+      if (!cats.length) {
+        PyPlot.empty('exp-category', 'No categories filled — use the Category column in expense.xlsx.');
+      } else {
+        PyPlot.pie('exp-category', {
+          labels: cats.map(c => c[0]),
+          values: cats.map(c => c[1]),
+          hole: 0.55,
+          colors: COLORS,
+          customdata: cats.map(c => fmtINR(c[1])),
+          annotations: [{ text: 'Category', showarrow: false, font: { size: 12, color: '#4A2E19' } }]
+        });
+      }
+
+      const people = topN(byPerson, 8);
+      if (!people.length) {
+        PyPlot.empty('exp-by', emptyMsg);
+      } else {
+        PyPlot.bar('exp-by', {
+          y: people.map(d => shortName(d[0], 22)).reverse(),
+          x: people.map(d => d[1]).reverse(),
+          orientation: 'h',
+          grad: 'sunset',
+          text: people.map(d => fmtINR(d[1])).reverse(),
+          customdata: people.map(d => `${d[0]} · ${fmtINR(d[1])}`).reverse(),
+          margin: { ...plotLayout.margin, l: 110, r: 72, t: 12, b: 16 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '' }
+        });
+      }
+
+      if (!byMode.length) {
+        PyPlot.empty('exp-mode', 'No payment mode on expense rows.');
+      } else {
+        PyPlot.pie('exp-mode', {
+          labels: byMode.map(m => m[0]),
+          values: byMode.map(m => m[1]),
+          hole: 0.55,
+          colors: [COLORS[0], COLORS[2], COLORS[3], COLORS[5], '#B91C1C'],
+          customdata: byMode.map(m => fmtINR(m[1]))
+        });
+      }
+
+      const heads = topN(sumBy(expenses, r => r.name || 'Other', r => r.amount), 10);
+      if (!heads.length) {
+        PyPlot.empty('exp-heads', emptyMsg);
+      } else {
+        PyPlot.bar('exp-heads', {
+          y: heads.map(d => shortName(d[0], 28)).reverse(),
+          x: heads.map(d => d[1]).reverse(),
+          orientation: 'h',
+          grad: 'amber',
+          text: heads.map(d => fmtINR(d[1])).reverse(),
+          customdata: heads.map(d => `${d[0]} · ${fmtINR(d[1])}`).reverse(),
+          margin: { ...plotLayout.margin, l: 150, r: 80, t: 8, b: 16 },
+          yaxis: { automargin: true, tickprefix: '' },
+          xaxis: { showticklabels: false, title: '', ticks: '' }
+        });
+      }
+
+      if (!byBranch.length) {
+        PyPlot.empty('exp-branch', 'No Branch values yet — fill the Branch column in expense.xlsx.');
+      } else {
+        PyPlot.bar('exp-branch', {
+          x: byBranch.map(b => b[0]),
+          y: byBranch.map(b => b[1]),
+          grad: 'mint',
+          text: byBranch.map(b => fmtINR(b[1])),
+          customdata: byBranch.map(b => `${b[0]} · ${fmtINR(b[1])}`),
+          margin: { ...plotLayout.margin, t: 28, b: 56 },
+          xaxis: { ...plotLayout.xaxis, tickprefix: '', tickangle: 0 },
+          yaxis: { ...plotLayout.yaxis, title: { text: 'Spend', font: { size: 11, color: '#8C6A4A' } } }
+        });
+      }
+
+      const rows = [...expenses].sort((a, b) => (b.date || 0) - (a.date || 0)).slice(0, 60);
+      document.getElementById('exp-table').innerHTML = `<table>
+    <thead><tr>
+      <th>Date</th><th>Expense</th><th>Category</th><th>By</th><th>Mode</th>
+      <th>Paid to</th><th>Branch</th><th>Ref</th><th class="num">Amount</th>
+    </tr></thead>
+    <tbody>${rows.map(r => `<tr>
+      <td>${fmtDate(r.date)}</td>
+      <td>${esc(r.name)}</td>
+      <td>${esc(r.category)}</td>
+      <td>${esc(r.by || '—')}</td>
+      <td>${esc(r.mode || '—')}</td>
+      <td>${esc(r.paidTo || '—')}</td>
+      <td>${esc(r.branch || '—')}</td>
+      <td>${esc(r.ref || '—')}</td>
+      <td class="num tabular">${fmtINR(r.amount)}</td>
+    </tr>`).join('')}</tbody></table>`;
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.querySelectorAll('#expenses .js-plotly-plot').forEach(el => {
+            try { Plotly.Plots.resize(el); } catch (_) { /* ignore */ }
+          });
+        });
+      });
+    }
+
+    function buildInsightsSnapshot() {
+      // Always full registers — Insights page has no FY tabs
+      const stockRows = stock.filter(r => !isIgnoredCategory(r.category));
+      const salesRows = sales.filter(r => !isIgnoredCategory(r.category));
+      const purchaseRows = purchases.filter(r => !isIgnoredCategory(r.category));
+      const expenseRows = expenses;
+      const payRows = payments;
+      const customerRows = customers;
+
+      const stockVal = stockRows.reduce((a, r) => a + r.value, 0);
+      const recv = customerRows.reduce((a, r) => a + r.outstanding, 0);
+      const salesVal = salesRows.reduce((a, r) => a + r.amount, 0);
+      const purVal = purchaseRows.reduce((a, r) => a + r.amount, 0);
+      const expVal = expenseRows.reduce((a, r) => a + r.amount, 0);
+      const collected = payRows.reduce((a, r) => a + r.received, 0);
+      const oos = stockRows.filter(r => r.qty <= 0);
+      const low = stockRows.filter(r => r.qty > 0 && r.qty <= 5);
+      const debtors = topN(sumBy(customerRows, r => r.name, r => r.outstanding).filter(x => x[1] > 0), 8);
+      const topSup = topN(sumBy(purchaseRows, r => r.supplier, r => r.amount), 5);
+      const topCust = topN(sumBy(salesRows, r => r.customer, r => r.amount), 5);
+      const salesBrands = topN(
+        sumBy(salesRows.filter(r => r.brand && r.brand !== 'Unbranded'), r => r.brand, r => r.amount),
+        5
+      );
+      const rec = salesRecency();
+      const dues = outstandingByNorm();
+      const silent = rec.silent3.map(s => ({
+        name: s.name,
+        lastSale: s.last ? s.last.toISOString().slice(0, 10) : null,
+        historicalSales: Math.round(s.amount),
+        outstanding: Math.round(dueOf(dues, s.key)),
+        dormant6mo: s.last < rec.cut6,
+      })).sort((a, b) => b.outstanding - a.outstanding).slice(0, 12);
+
+      const payModes = sumBy(payRows, r => r.mode || 'Unspecified', r => r.received);
+      const expCats = sumBy(expenseRows, r => r.category || 'Uncategorized', r => r.amount);
+
+      return {
+        business: 'Jaiswal Group — electrical / lighting wholesale (West Bengal)',
+        period: 'All periods (full registers)',
+        asOf: startOfToday().toISOString().slice(0, 10),
+        totals: {
+          stockValue: Math.round(stockVal),
+          receivables: Math.round(recv),
+          sales: Math.round(salesVal),
+          purchases: Math.round(purVal),
+          expenses: Math.round(expVal),
+          collections: Math.round(collected),
+          workingCapital: Math.round(stockVal + recv),
+          tradeGap: Math.round(salesVal - purVal),
+          purchaseVsSalesPct: salesVal ? Math.round(100 * purVal / salesVal) : null,
+        },
+        counts: {
+          skus: stockRows.length,
+          outOfStock: oos.length,
+          lowStock: low.length,
+          customersWithDues: customerRows.filter(c => c.outstanding > 0).length,
+          salesLines: salesRows.length,
+          purchaseLines: purchaseRows.length,
+          paymentRows: payRows.length,
+          expenseRows: expenseRows.length,
+          silent3mo: rec.silent3.length,
+          silent6mo: rec.silent6.length,
+        },
+        topDebtors: debtors.map(([name, amt]) => ({
+          name, outstanding: Math.round(amt),
+          sharePct: recv ? Math.round(100 * amt / recv) : 0,
+        })),
+        topCustomers: topCust.map(([name, amt]) => ({
+          name, sales: Math.round(amt),
+          sharePct: salesVal ? Math.round(100 * amt / salesVal) : 0,
+        })),
+        topSuppliers: topSup.map(([name, amt]) => ({
+          name, purchases: Math.round(amt),
+          sharePct: purVal ? Math.round(100 * amt / purVal) : 0,
+        })),
+        topBrands: salesBrands.map(([name, amt]) => ({ name, sales: Math.round(amt) })),
+        silentCustomers: silent,
+        silentDuesTotal: Math.round(silent.reduce((a, s) => a + s.outstanding, 0)),
+        paymentModes: payModes.map(([mode, amt]) => ({ mode, amount: Math.round(amt) })),
+        expenseCategories: expCats.map(([cat, amt]) => ({ category: cat, amount: Math.round(amt) })),
+        lowStockSample: low.slice(0, 8).map(r => ({ name: r.name, qty: r.qty, brand: r.brand })),
+        outOfStockSample: oos.slice(0, 8).map(r => ({ name: r.name, brand: r.brand })),
+      };
+    }
+
+    function paintInsightCards(cards) {
+      const el = document.getElementById('insight-cards');
+      if (!cards || !cards.length) {
+        el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><h3>No insights yet</h3><p>Gemini returned no cards. Tap Refresh AI insights.</p></div>`;
+        return;
+      }
+      el.innerHTML = cards.map(c => `
     <article class="insight">
-      <span class="tag ${esc(c.tag)}">${esc(c.tagText)}</span>
-      <h3>${c.title}</h3>
-      <p>${c.body}</p>
-      <div class="act">${esc(c.act)}</div>
+      <span class="tag ${esc(c.tag || '')}">${esc(c.tagText || 'Insight')}</span>
+      <h3>${esc(c.title || '')}</h3>
+      <p>${esc(c.body || '')}</p>
+      <div class="act">${esc(c.act || '')}</div>
     </article>`).join('');
     }
+
+    let insightsInflight = null;
+    async function renderInsights() {
+      const status = document.getElementById('insights-status');
+      status.innerHTML = `<div style="flex:1"><b>Gemini · generating</b><span>Reading full sales, purchases, stock, credit, payments, and expenses — all content on this page comes from the API.</span></div>`;
+      paintInsightCards([{
+        tag: 'ok', tagText: 'Loading',
+        title: 'Generating insights from Gemini…',
+        body: 'Please wait. This page shows only API-generated content — no static or FY-filtered copy.',
+        act: 'Calling /api/insights'
+      }]);
+
+      const snapshot = buildInsightsSnapshot();
+      const token = Symbol('insights');
+      insightsInflight = token;
+
+      try {
+        const res = await fetch('/api/insights', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ snapshot }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (insightsInflight !== token) return;
+        if (!res.ok || !Array.isArray(data.cards) || !data.cards.length) {
+          const raw = String(data.error || `Insights API HTTP ${res.status}`);
+          // Gemini retired-model 404s used to surface as a confusing "404" on this page
+          let msg = raw;
+          if (/models\/.+ is not found|no longer available/i.test(raw)) {
+            msg = 'Gemini model unavailable for this API key. Server will retry newer models — tap Refresh again.';
+          } else if (/high demand|UNAVAILABLE|429|503/i.test(raw)) {
+            msg = 'Gemini is overloaded right now. Tap Refresh AI insights in a few seconds.';
+          } else if (res.status === 404) {
+            msg = 'Insights API route missing — open the dashboard via http://127.0.0.1:5000/ (not as a local file) and ensure python app.py is running.';
+          }
+          throw new Error(msg);
+        }
+        paintInsightCards(data.cards);
+        const brief = (data.brief || '').trim();
+        status.innerHTML = `<div style="flex:1"><b>Gemini · live</b><span>${brief ? esc(brief) : 'Board actions below were generated entirely by the API from your report workbooks.'}</span></div>`;
+      } catch (err) {
+        if (insightsInflight !== token) return;
+        document.getElementById('insight-cards').innerHTML = '';
+        const detail = String(err.message || err);
+        const offline = /Failed to fetch|NetworkError|Load failed/i.test(detail);
+        status.innerHTML = `<div style="flex:1"><b>Gemini unavailable</b><span>${esc(offline ? 'Cannot reach the server. Start with python app.py and open http://127.0.0.1:5000/' : detail)}</span></div>`;
+      }
+    }
+
+    document.getElementById('insights-refresh')?.addEventListener('click', () => {
+      if (document.querySelector('.view.active')?.id === 'insights') renderInsights();
+      else document.querySelector('.tabs button[data-view="insights"]')?.click();
+    });
 
     /* ========================= boot ========================= */
     async function boot() {
@@ -3007,21 +3499,31 @@ print("PyScript Python Chart Engine registered.")
       const label = document.getElementById('live-label');
       const asof = document.getElementById('asof-line');
       try {
+        let payWarn = '';
         const [s, c, sa, p, e, pay] = await Promise.all([
           fetchSheetRows('/data/stock.xlsx'),
           fetchSheetRows('/data/Customer_details.xlsx'),
           fetchSheetRows('/data/sales_transcation.xlsx', { allSheets: true }),
           fetchSheetRows('/data/purchase_transcation.xlsx', { allSheets: true }),
           fetchSheetRows('/data/expense.xlsx').catch(() => []),
-          fetchSheetRows('/data/payemt_transcation.xlsx', { allSheets: true }).catch(() => []),
+          fetchSheetRows('/data/payemt_transcation.xlsx', { allSheets: true }).catch(err => {
+            payWarn = String(err.message || err);
+            return [];
+          }),
         ]);
         stock = mapStock(s); customers = mapCustomers(c); sales = mapSales(sa); purchases = mapPurchase(p); expenses = mapExpenses(e || []); payments = mapPayments(pay || []);
         populateInvBrandSlicer();
-        pill.classList.remove('warn');
-        label.textContent = 'Live · Reports';
         const salesFy25 = sales.filter(r => getFyId(r.date) === '2025-26').length;
         const salesFy26 = sales.filter(r => getFyId(r.date) === '2026-27').length;
-        asof.innerHTML = `Loaded <b>${fmtNum(stock.length)}</b> stock · <b>${fmtNum(sales.length)}</b> sales (FY25-26: ${fmtNum(salesFy25)} · FY26-27: ${fmtNum(salesFy26)}) · <b>${fmtNum(purchases.length)}</b> purchases · <b>${fmtNum(payments.length)}</b> payments`;
+        if (!payments.length && payWarn) {
+          pill.classList.add('warn');
+          label.textContent = 'Payments locked';
+          asof.innerHTML = `Loaded stock/sales/purchases, but <b>payemt_transcation.xlsx</b> failed (${esc(payWarn)}). Close it in Excel and refresh.`;
+        } else {
+          pill.classList.remove('warn');
+          label.textContent = 'Live · Reports';
+          asof.innerHTML = `Loaded <b>${fmtNum(stock.length)}</b> stock · <b>${fmtNum(sales.length)}</b> sales (FY25-26: ${fmtNum(salesFy25)} · FY26-27: ${fmtNum(salesFy26)}) · <b>${fmtNum(purchases.length)}</b> purchases · <b>${fmtNum(payments.length)}</b> payments`;
+        }
         rerenderAll();
       } catch (err) {
         pill.classList.add('warn');
@@ -3062,7 +3564,7 @@ print("PyScript Python Chart Engine registered.")
         document.getElementById('pdfx-dl-xlsx').addEventListener('click', downloadExtractedXlsx);
       }
       async function extractWithGemini(file) {
-        setStatus('<span class="spin"></span>Sending PDF to extraction server…');
+        setStatus('<span class="spin"></span>Extracting fields with Gemini…');
         actionsEl.style.display = 'none'; actionsEl.innerHTML = ''; previewEl.style.display = 'none'; lastExtract = { rows: null, fileName: '' };
         const form = new FormData(); form.append('file', file);
         let res, data;
@@ -3070,8 +3572,8 @@ print("PyScript Python Chart Engine registered.")
         catch {
           const hint = location.protocol === 'file:'
             ? 'Open <code>http://127.0.0.1:5000/</code> — do not open this file directly.'
-            : 'Confirm <code>python app.py</code> is running.';
-          setStatus('Could not reach the extraction server. ' + hint, 'err'); return;
+            : 'Confirm <code>python app.py</code> is running with your <code>.env</code> API key.';
+          setStatus('Could not reach the Gemini extraction server. ' + hint, 'err'); return;
         }
         try { data = await res.json(); } catch { setStatus('Server returned a response that could not be parsed.', 'err'); return; }
         if (!res.ok) { setStatus('Extraction error: ' + esc(data.error || `HTTP ${res.status}`), 'err'); return; }
@@ -3082,7 +3584,7 @@ print("PyScript Python Chart Engine registered.")
         previewEl.style.display = '';
         previewEl.innerHTML = `<table><thead><tr>${PURCHASE_HEADERS.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(r => `<tr>${PURCHASE_HEADERS.map(h => `<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-        setStatus(`Extracted ${rows.length} line item${rows.length === 1 ? '' : 's'} successfully.`, 'ok');
+        setStatus(`Extracted ${rows.length} line item${rows.length === 1 ? '' : 's'} — download Excel below.`, 'ok');
         showDownloadActions(rows.length);
       }
       fileInput.addEventListener('change', e => { const f = e.target.files[0]; if (f) extractWithGemini(f); });
@@ -3092,7 +3594,7 @@ print("PyScript Python Chart Engine registered.")
     })();
 
     (function () {
-      const SALES_HEADERS = ['Invoice No', 'Customer Name', 'Product Name', 'Product Category', 'HSN Code', 'Quantity', 'Rate', 'CGST', 'SGST', 'Total Amount'];
+      const SALES_HEADERS = ['Invoice No', 'Billing Date', 'Customer Name', 'Product Name', 'Product Category', 'HSN Code', 'Quantity', 'Rate', 'CGST', 'SGST', 'Total Amount'];
       const fileInput = document.getElementById('pdfx-sales-file');
       const dropzoneEl = document.querySelector('#conv-sales-pdf-extractor .dropzone');
       const statusEl = document.getElementById('pdfx-sales-status');
@@ -3120,7 +3622,7 @@ print("PyScript Python Chart Engine registered.")
         document.getElementById('pdfx-sales-dl-xlsx').addEventListener('click', downloadExtractedXlsx);
       }
       async function extractSalesWithGemini(file) {
-        setStatus('<span class="spin"></span>Sending PDF to extraction server…');
+        setStatus('<span class="spin"></span>Extracting fields with Gemini…');
         actionsEl.style.display = 'none'; actionsEl.innerHTML = ''; previewEl.style.display = 'none'; lastExtract = { rows: null, fileName: '' };
         const form = new FormData(); form.append('file', file);
         let res, data;
@@ -3128,8 +3630,8 @@ print("PyScript Python Chart Engine registered.")
         catch {
           const hint = location.protocol === 'file:'
             ? 'Open <code>http://127.0.0.1:5000/</code> — do not open this file directly.'
-            : 'Confirm <code>python app.py</code> is running.';
-          setStatus('Could not reach the extraction server. ' + hint, 'err'); return;
+            : 'Confirm <code>python app.py</code> is running with your <code>.env</code> API key.';
+          setStatus('Could not reach the Gemini extraction server. ' + hint, 'err'); return;
         }
         try { data = await res.json(); } catch { setStatus('Server returned a response that could not be parsed.', 'err'); return; }
         if (!res.ok) { setStatus('Extraction error: ' + esc(data.error || `HTTP ${res.status}`), 'err'); return; }
@@ -3140,7 +3642,7 @@ print("PyScript Python Chart Engine registered.")
         previewEl.style.display = '';
         previewEl.innerHTML = `<table><thead><tr>${SALES_HEADERS.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(r => `<tr>${SALES_HEADERS.map(h => `<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-        setStatus(`Extracted ${rows.length} line item${rows.length === 1 ? '' : 's'} successfully.`, 'ok');
+        setStatus(`Extracted ${rows.length} line item${rows.length === 1 ? '' : 's'} — download Excel below.`, 'ok');
         showDownloadActions(rows.length);
       }
       fileInput.addEventListener('change', e => { const f = e.target.files[0]; if (f) extractSalesWithGemini(f); });
