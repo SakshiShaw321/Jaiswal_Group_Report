@@ -399,7 +399,8 @@ Return ONLY a JSON object (no markdown) with exactly these keys:
   - "act": one concrete next step (max ~120 chars)
 
 Prioritise: cash stuck in receivables, silent customers with dues, supplier concentration, stockouts, sales vs purchase imbalance, payment collection patterns, expense gaps if expenses are empty.
-Do not mention that you are an AI. Do not invent expense figures if expenses.total is 0."""
+Do not mention that you are an AI. Do not invent expense figures if expenses.total is 0.
+Do not invent parties, SKUs, amounts, percentages, or dates that are not present in the snapshot JSON. If a register is empty (e.g. expenses = 0), say so plainly instead of fabricating spend."""
 
 
 def call_gemini_text(prompt: str, user_payload: dict) -> dict:
